@@ -23,7 +23,7 @@ $session_cookie_domain = 'dankme.me';
 function get_userlevel($user_id) {
 	global $mysqli;
 	$user_id = (int) $user_id * 1;
-	$get_user_row = $mysqli->query("SELECT userlevel FROM users WHERE id=$user_id");
+	$get_user_row = $mysqli->query("SELECT userlevel FROM users WHERE user_id=$user_id");
 	if ($get_user_row->num_rows == 1) {
 		$user_row = $get_user_row->fetch_assoc();
 		return $user_row['userlevel'] * 1;
