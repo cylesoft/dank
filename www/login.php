@@ -39,6 +39,6 @@ if (isset($current_user) && isset($current_user['loggedin']) && $current_user['l
 
 </div>
 
-<script src="dank.js" type="text/javascript"></script>
+<script src="/js/dank.js" type="text/javascript"></script>
 </body>
 </html>

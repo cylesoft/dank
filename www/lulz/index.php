@@ -33,6 +33,6 @@ require_once('../../lib/dank/login_check.php');
 
 </div>
 
-<script src="dank.js" type="text/javascript"></script>
+<script src="/js/dank.js" type="text/javascript"></script>
 </body>
 </html>
