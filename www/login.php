@@ -18,7 +18,7 @@ if (isset($current_user) && isset($current_user['loggedin']) && $current_user['l
 <link href="//fonts.googleapis.com/css?family=Lato:300italic,700italic|Open+Sans:400italic,700italic,400,700" rel="stylesheet" type="text/css" />
 <link href="/css/dank.css" rel="stylesheet" type="text/css" />
 </head>
-<body onload="document.getElementById('start-here').focus()">
+<body>
 <div class="grid-container">
 
 <div class="section group">
@@ -30,9 +30,9 @@ if (isset($current_user) && isset($current_user['loggedin']) && $current_user['l
 <div class="section group">
 	<div class="col s12">
 		<form action="/login/" method="post">
-		<p><input tabindex="1" id="start-here" name="e" type="email" placeholder="you@fuck.off" /></p>
+		<p><input tabindex="1" name="e" type="email" placeholder="you@fuck.off" /></p>
 		<p><input tabindex="2" name="p" type="password" /></p>
-		<p><input tabindex="3" type="submit" value="log in &raquo;" /></p>
+		<p><input tabindex="3" type="submit" class="small" value="log in &raquo;" /></p>
 		</form>
 	</div>
 </div>

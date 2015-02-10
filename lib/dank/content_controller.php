@@ -169,7 +169,28 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 	
 	$content = array(); // will hold content to return
 	
-	$get_content = $mysqli->query('SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id ORDER BY posted_ts DESC LIMIT 20');
+	$query_where_clause = '';
+	if (count($filter) > 0) {
+		
+		$query_where_clause .= 'WHERE ';
+		
+		$query_where_list = '';
+		
+		if (isset($filter['post_id']) && is_numeric($filter['post_id'])) {
+			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
+			$query_where_list .= 'post_id='.((int) $filter['post_id'] * 1);
+		}
+		
+		if (isset($filter['visibility']) && is_numeric($filter['visibility'])) {
+			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
+			$query_where_list .= 'visibility >= '.((int) $filter['visibility'] * 1);
+		}
+		
+		$query_where_clause .= $query_where_list;
+		
+	}
+	
+	$get_content = $mysqli->query('SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id '.$query_where_clause.' ORDER BY posted_ts DESC LIMIT 20');
 	while ($content_row = $get_content->fetch_assoc()) {
 		if ($content_row['post_type'] == 'image' || $content_row['post_type'] == 'audio' || $content_row['post_type'] == 'video') {
 			$files = array();

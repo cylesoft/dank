@@ -1,3 +1,17 @@
+/*
+	
+	dankmeme css
+		mostly based off of the cylesoft style
+		with customizations below
+	
+*/
+
+/*
+	
+	generic cylesoft styling template
+	
+*/
+
 * {
 	padding: 0;
 	margin: 0;
@@ -9,12 +23,7 @@ body, input, textarea {
 	font-size: 14px;
 }
 
-div.container {
-	width: 550px;
-	margin: 2rem auto;
-}
-
-div.container > *, div.col > * {
+div.col > * {
 	margin-bottom: 1rem;
 }
 
@@ -245,31 +254,20 @@ a.button {
 	background-color: #1e98de !important;
 }
 
-p.version-info {
-	font-style: italic;
-	text-align: right;
-	color: #aaa;
-	font-size: 0.75rem;
+/*
+	
+	custom stuff for dankmeme
+	
+*/
+
+h1 a {
+	color: inherit;
+	text-decoration: none;
 }
 
-p.aside {
-	position: absolute;
-	width: 200px;
-	margin-top: -100px;
-	margin-left: 570px;
-	padding-left: 1rem;
-	border-left: 4px solid #eaeaea;
-	color: #888;
-	font-size: 0.8rem;
-}
-
-p.aside.left {
-	margin-left: -220px;
-	padding-left: 0;
-	padding-right: 1rem;
-	border-left: none;
-	border-right: 4px solid #eaeaea;
-	text-align: right;
+body {
+	background-color: #eee;
+	color: #111;
 }
 
 form table td {
@@ -285,50 +283,73 @@ div.header p {
 	font-style: italic;
 }
 
-div.post {
-	margin-bottom: 4rem;
+div.text-box, div.post, div.new-post { 
+	padding: 0.5rem 0.75rem;
 }
 
-@media only screen and (max-width: 1100px) {
-	div.container {
-		margin-left: 2rem;
-		margin-right: 2rem;
-	}
+div.post {
+	margin-bottom: 1.5rem;
+	background-color: #fff;
+	border-radius: 4px;
+}
+
+.post-info {
+	float: right;
+	color: #ccc;
+	margin-bottom: 0.5rem;
+}
+
+.post-info a {
+	color: inherit;
+}
+
+div.new-post {
+	background-color: #CFCFCF;
+	border-radius: 4px;
+}
+
+div.new-post textarea {
+	height: 10rem;
+}
+
+div.new-post #file-drop-zone {
+	border: 1px dotted black;
+	border-radius: 4px;
+	padding: 1rem;
+}
+
+div.about {
+	background-color: #838383;
+	color: #A7FFA7;
+	border-radius: 4px;
+}
+
+/*
 	
-	p.aside.left {
-		margin-left: 560px;
-		padding-left: 1rem;
-		padding-right: 0;
-		border-left: 4px solid #eaeaea;
-		border-right: none;
-		text-align: left;
-	}
+	breakpoints
+	
+*/
+
+@media only screen and (max-width: 1100px) {
+	/* large screen */
+	
 }
 
 @media only screen and (max-width: 850px) {
-	p.aside, p.aside.left {
-		position: static;
-		width: auto;
-		margin-left: 0;
-		margin-top: 0;
-	}
+	/* medium screen */
+	
 }
 
 @media only screen and (max-width: 600px) {
-	div.container {
-		width: 100%;
-		padding: 1rem;
-		margin: 0;
-	}
+	/* small/mobile screen */
 	
-	h1 {
-		font-size: 2.5rem;
-	}
 }
 
-
 /*
-* generated this grid at http://flow.gs
+	
+	grid work
+		generated this grid at http://flow.gs
+	
 */
 
 .grid-container {
@@ -345,7 +366,7 @@ div.section {
 
 .col {
 	display: block;
-	float:left;
+	float: left;
 	width: 100%;
 	background-clip: padding-box;
 	-moz-background-clip: padding-box;
@@ -355,19 +376,17 @@ div.section {
 }
 
 div.group:before, div.group:after {
-	content:"";
-	display:table;
+	content: "";
+	display: table;
 }
 
 div.group:after {
-	clear:both;
+	clear: both;
 }
 
 @media only screen and (min-width:480px) {
 	
-	.col {
-		width: auto;
-	}
+	.col { width: auto; }
 	
 	.s1 { width: 8.33%; }
 	
