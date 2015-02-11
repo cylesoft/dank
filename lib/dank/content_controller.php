@@ -3,7 +3,8 @@
 /*
 	
 	controller for
-	 - posting new content
+	 - parsing text content
+	 - posting new content in the database
 	 - fetching lots of content
 	 - editing existing content
 	 - deleting existing content
@@ -18,6 +19,34 @@ $file_url_base = '/files/';
 
 require_once('dbconn_mysql.php');
 
+// parse text to link-ify links, #hashtags, and @mentions
+function parse_text($text) {
+	$link_regex = '/\b(https?:\/\/)?(\S+)\.(\S+)\b/i';
+	$hashtag_regex = '/\#(\S+)/i';
+	$mention_regex = '/\@(\S+)/i';
+	$t = $text;
+	$links_found = preg_match_all($link_regex, $t, $link_matches);
+	//print_r($links_found);
+	//print_r($link_matches);
+	$hashtags_found = preg_match_all($hashtag_regex, $t, $hashtag_matches);
+	//print_r($hashtags_found);
+	//print_r($hashtag_matches);
+	$mentions_found = preg_match_all($mention_regex, $t, $mention_matches);
+	//print_r($mentions_found);
+	//print_r($mention_matches);
+	$t = preg_replace_callback($link_regex, function($matches) {
+		$the_link = $matches[0];
+		if (substr($the_link, 0, 4) != 'http') {
+			$the_link = 'http://'.$the_link;
+		}
+		return '<a href="'.$the_link.'">'.$matches[0].'</a>';
+	}, $t);
+	$t = preg_replace($hashtag_regex, '<a href="/tagged/$1/">$0</a>', $t);
+	$t = preg_replace($mention_regex, '<a href="/by/$1/">$0</a>', $t);
+	return array('text' => $t, 'links' => $link_matches[0], 'mentions' => $mention_matches[1], 'hashtags' => $hashtag_matches[1]);
+}
+
+// deal with saving new content to the database
 function post_new_content($content) {
 	
 	global $mysqli, $file_path_base, $file_url_base;
@@ -38,7 +67,15 @@ function post_new_content($content) {
 		// user mentions (@whoever)
 		// and transform them accordingly
 		
-		$reformatted_text = $content['text'];
+		$reformatted_result = parse_text($content['text']);
+		
+		// use the ['links'] and ['mentions'] and ['hashtags'] keys for anything...?
+		// check to see if the @mentioned user(s) even exist?
+		// notify user(s) of their mention(s)? index them?
+		// index the hashtag reference(s) somewhere?
+		// check the links to see if they're images/audio/video?
+		
+		$reformatted_text = $reformatted_result['text'];
 		
 		$thetext_db = "'".$mysqli->escape_string($reformatted_text)."'";
 		
@@ -164,6 +201,7 @@ function post_new_content($content) {
 	
 }
 
+// deal with fetching content from the database
 function fetch_content($filter = array(), $order = array(), $pagination = array()) {
 	global $mysqli;
 	
@@ -222,10 +260,12 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 	
 }
 
+// deal with editing a piece of content
 function edit_content($content) {
 	global $mysqli;
 }
 
+// deal with deleting a piece of content
 function delete_content($content_id) {
 	global $mysqli;
 }
