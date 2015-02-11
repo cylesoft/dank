@@ -15,6 +15,18 @@ if (isset($_GET['cid']) && is_numeric($_GET['cid'])) {
 	$single_post_mode = true;
 }
 
+if (isset($_GET['tag']) && trim($_GET['tag']) != '' && trim($_GET['tag']) != '/') {
+	$tag_filter = trim($_GET['tag']);
+	if (substr($tag_filter, -1) == '/') { $tag_filter = substr($tag_filter, 0, -1); }
+	$post_filter['tag'] = $tag_filter;
+}
+
+if (isset($_GET['u']) && trim($_GET['u']) != '' && trim($_GET['u']) != '/') {
+	$user_filter = trim($_GET['u']);
+	if (substr($user_filter, -1) == '/') { $user_filter = substr($user_filter, 0, -1); }
+	$post_filter['user'] = $user_filter;
+}
+
 if ($current_user['loggedin']) {
 	$post_filter['visibility'] = $current_user['userlevel'];
 } else {
@@ -24,6 +36,7 @@ if ($current_user['loggedin']) {
 ?><!doctype html>
 <html>
 <?php echo '<!-- '.print_r($_GET, true).' -->'; ?>
+<?php echo '<!-- '.print_r($post_filter, true).' -->'; ?>
 <!--
       _             _                                  
      | |           | |                                 
@@ -47,30 +60,34 @@ if ($current_user['loggedin']) {
 		<div class="posts">
 			<?php
 			$posts = fetch_content($post_filter);
-			foreach ($posts as $post) {
-				?>
-				<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
-					<!-- <?php echo print_r($post, true); ?> -->
-					<?php
-					$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? $post['username'] : 'Anonymous');
-					if ($single_post_mode) {
-						?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
-					} else {
-						?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
-					}
+			if (isset($posts['error'])) {
+				echo '<pre>'.$posts['error'].'</pre>';
+			} else {
+				foreach ($posts as $post) {
 					?>
-					<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
-					<p><img src="<?php echo $post['files'][0]['file_url']; ?>" /></p>
-					<?php } ?>
-					<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
-					<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></audio></p>
-					<?php } ?>
-					<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-					<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>"></video></p>
-					<?php } ?>
-					<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
-				</div>
-				<?php
+					<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
+						<!-- <?php echo print_r($post, true); ?> -->
+						<?php
+						$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? $post['username'] : 'Anonymous');
+						if ($single_post_mode) {
+							?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
+						} else {
+							?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
+						}
+						?>
+						<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
+						<p><img src="<?php echo $post['files'][0]['file_url']; ?>" /></p>
+						<?php } ?>
+						<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
+						<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></audio></p>
+						<?php } ?>
+						<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
+						<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>"></video></p>
+						<?php } ?>
+						<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
+					</div>
+					<?php
+				}
 			}
 			?>
 		</div>

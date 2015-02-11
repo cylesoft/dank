@@ -186,11 +186,26 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 			$query_where_list .= 'visibility >= '.((int) $filter['visibility'] * 1);
 		}
 		
+		if (isset($filter['user']) && trim($filter['user']) != '') {
+			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
+			$query_where_list .= 'posts.user_id IN (SELECT user_id FROM users WHERE username=\''.$mysqli->escape_string($filter['user']).'\')';
+		}
+		
+		if (isset($filter['tag']) && trim($filter['tag']) != '') {
+			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
+			$query_where_list .= 'rawtext LIKE \'%#'.$mysqli->escape_string($filter['tag']).'%\'';
+		}
+		
 		$query_where_clause .= $query_where_list;
 		
 	}
 	
-	$get_content = $mysqli->query('SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id '.$query_where_clause.' ORDER BY posted_ts DESC LIMIT 20');
+	$get_content_query = 'SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id '.$query_where_clause.' ORDER BY posted_ts DESC LIMIT 20';
+	//echo '<pre>'.$get_content_query.'</pre>';
+	$get_content = $mysqli->query($get_content_query);
+	if (!$get_content) {
+		return array('error' => 'mysql error: '.$mysqli->error);
+	}
 	while ($content_row = $get_content->fetch_assoc()) {
 		if ($content_row['post_type'] == 'image' || $content_row['post_type'] == 'audio' || $content_row['post_type'] == 'video') {
 			$files = array();
