@@ -309,11 +309,15 @@ div.new-post {
 	border-radius: 4px;
 }
 
-div.new-post textarea {
+#new-post-form textarea {
 	height: 10rem;
 }
 
-div.new-post #file-drop-zone {
+#new-post-form .full-page-new-post-form textarea {
+	height: 20rem;
+}
+
+#new-post-form #file-drop-zone {
 	border: 1px dotted red;
 	border-radius: 4px;
 	padding: 1rem;

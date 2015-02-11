@@ -113,6 +113,7 @@ if ($current_user['loggedin']) {
 			<p><label><input type="checkbox" name="anon" value="1" /> post anonymously?</label></p>
 			<p><label><input type="checkbox" name="nsfw" value="1" /> nsfw?</label></p>
 			<p><input type="submit" class="small green" value="post that shit &raquo;" /></p>
+			<p>or <a href="/content/new/">use the bigger form &raquo;</a></p>
 			</form>
 		</div>
 		
