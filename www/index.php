@@ -87,7 +87,7 @@ if ($current_user['loggedin']) {
 					<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></audio></p>
 					<?php } ?>
 					<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-					<p><video controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></video></p>
+					<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>"></video></p>
 					<?php } ?>
 					<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
 				</div>

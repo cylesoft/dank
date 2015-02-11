@@ -9,8 +9,8 @@ if (!isset($_REQUEST['a']) || trim($_REQUEST['a']) == '') {
 
 $action = strtolower(trim($_REQUEST['a']));
 
-echo '<pre>$_REQUEST: '.print_r($_REQUEST, true).'</pre>';
-echo '<pre>$_FILES: '.print_r($_FILES, true).'</pre>';
+//echo '<pre>$_REQUEST: '.print_r($_REQUEST, true).'</pre>';
+//echo '<pre>$_FILES: '.print_r($_FILES, true).'</pre>';
 
 require_once('../lib/dank/content_controller.php');
 
@@ -63,7 +63,13 @@ if ($action == 'n') {
 	
 	$post_result = post_new_content($the_content);
 	
-	echo '<pre>post_new_content: '.print_r($post_result, true).'</pre>';
+	//echo '<pre>post_new_content: '.print_r($post_result, true).'</pre>';
+	
+	if ($post_result['ok'] == true) {
+		header('Location: /');
+	} else {
+		echo '<pre>post_new_content: '.print_r($post_result, true).'</pre>';
+	}
 		
 } else if ($action == 'e') {
 	

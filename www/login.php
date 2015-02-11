@@ -23,7 +23,7 @@ if (isset($current_user) && isset($current_user['loggedin']) && $current_user['l
 
 <div class="section group">
 	<div class="col s12">
-		<h1>dankmeme</h1>
+		<h1><a href="/">dankmeme</a></h1>
 	</div>
 </div>
 

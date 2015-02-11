@@ -31,9 +31,10 @@ b, strong {
 	font-weight: 700;
 }
 
-img {
+img, video, audio {
 	max-width: 100%;
 	height: auto;
+	display: block;
 }
 
 h1, h2, h3, h4 {
@@ -66,7 +67,7 @@ h2, h3, h4 {
 }
 
 ul, ol {
-	margin-left: 40px;
+	margin-left: 1.5rem;
 }
 
 ul {
@@ -313,7 +314,7 @@ div.new-post textarea {
 }
 
 div.new-post #file-drop-zone {
-	border: 1px dotted black;
+	border: 1px dotted red;
 	border-radius: 4px;
 	padding: 1rem;
 }

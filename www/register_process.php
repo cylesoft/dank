@@ -18,6 +18,10 @@ if (!isset($_POST['u']) || trim($_POST['u']) == '') {
 	die('you forgot to put in a goddamn username, jeez.');
 }
 
+if (strlen(trim($_POST['u'])) > 50) {
+	die('your username is too damn long');
+}
+
 if (!isset($_POST['p1']) || trim($_POST['p1']) == '') {
 	die('you forgot to put in your password, jeez.');
 }

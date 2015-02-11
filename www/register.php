@@ -12,7 +12,7 @@
 
 <div class="section group">
 	<div class="col s12">
-		<h1>dankmeme</h1>
+		<h1><a href="/">dankmeme</a></h1>
 	</div>
 </div>
 
