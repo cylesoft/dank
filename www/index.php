@@ -34,33 +34,12 @@ if ($current_user['loggedin']) {
                                                        
 -->
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>dankmeme</title>
-<link href="//fonts.googleapis.com/css?family=Lato:300italic,700italic|Open+Sans:400italic,700italic,400,700" rel="stylesheet" type="text/css" />
-<link href="/css/dank.css" rel="stylesheet" type="text/css" />
+<?php require_once('../lib/dank/templates/head.php'); ?>
 </head>
 <body>
 <div class="grid-container">
 
-<div class="section group header">
-	<div class="col s8 text-box">
-		<h1><a href="/">dankmeme</a></h1>
-	</div>
-	<div class="col s4 text-box">
-		<?php
-		if ($current_user['loggedin'] == false) {
-		?>
-		<p>got content? <a href="/login/">log in</a></p>
-		<?php
-		} else {
-		?>
-		<p>done here? <a href="/logout/">log out</a></p>
-		<?php
-		} // end login check
-		?>
-	</div>
-</div>
+<?php require_once('../lib/dank/templates/header.php'); ?>
 
 <div class="section group">
 	<div class="col s8 main-content">
@@ -134,6 +113,6 @@ if ($current_user['loggedin']) {
 
 </div>
 
-<script src="/js/dank.js" type="text/javascript"></script>
+<?php require_once('../lib/dank/templates/foot.php'); ?>
 </body>
 </html>

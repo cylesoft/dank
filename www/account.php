@@ -8,21 +8,11 @@ $user_info = $get_user_info->fetch_assoc();
 
 ?><!doctype html>
 <html>
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>dankmeme</title>
-<link href="//fonts.googleapis.com/css?family=Lato:300italic,700italic|Open+Sans:400italic,700italic,400,700" rel="stylesheet" type="text/css" />
-<link href="/css/dank.css" rel="stylesheet" type="text/css" />
+<?php require_once('../lib/dank/templates/head.php'); ?>
 </head>
 <body>
 <div class="grid-container">
-
-<div class="section group">
-	<div class="col s12">
-		<h1><a href="/">dankmeme</a></h1>
-	</div>
-</div>
+<?php require_once('../lib/dank/templates/header.php'); ?>
 
 <div class="section group">
 	<div class="col s12">
@@ -42,7 +32,6 @@ $user_info = $get_user_info->fetch_assoc();
 </div>
 
 </div>
-
-<script src="/js/dank.js" type="text/javascript"></script>
+<?php require_once('../lib/dank/templates/foot.php'); ?>
 </body>
 </html>
