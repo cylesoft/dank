@@ -57,6 +57,13 @@ if ($current_user['loggedin']) {
 <div class="section group">
 	<div class="col s8 main-content">
 		<!-- posts -->
+		<?php
+		if (isset($post_filter['tag'])) {
+			?><h2>shit tagged #<?php echo $post_filter['tag']; ?></h2><?php
+		} else if ($post_filter['user']) {
+			?><h2>shit by <?php echo $post_filter['user']; ?></h2><?php
+		}
+		?>
 		<div class="posts">
 			<?php
 			$posts = fetch_content($post_filter);
@@ -70,9 +77,9 @@ if ($current_user['loggedin']) {
 						<?php
 						$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? $post['username'] : 'Anonymous');
 						if ($single_post_mode) {
-							?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
+							?><p class="post-info"><a href="/by/<?php echo $poster_username; ?>"><?php echo $poster_username; ?></a> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
 						} else {
-							?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
+							?><p class="post-info"><a href="/by/<?php echo $poster_username; ?>"><?php echo $poster_username; ?></a> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
 						}
 						?>
 						<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
