@@ -115,6 +115,12 @@ if ($current_user['loggedin']) {
 			<p><input type="submit" class="small green" value="post that shit &raquo;" /></p>
 			</form>
 		</div>
+		
+		<div class="user-stuff text-box">
+			<ul>
+			<li><a href="/account/">change your account crap</a></li>
+			</ul>
+		</div>
 		<?php
 		} // end login check
 		?>

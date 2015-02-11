@@ -324,6 +324,12 @@ div.about {
 	border-radius: 4px;
 }
 
+div.user-stuff {
+	background-color: #fff;
+	color: red;
+	border-radius: 4px;
+}
+
 /*
 	
 	breakpoints
