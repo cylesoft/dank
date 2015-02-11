@@ -31,9 +31,14 @@ b, strong {
 	font-weight: 700;
 }
 
-img, video, audio {
+img, video {
 	max-width: 100%;
 	height: auto;
+	display: block;
+}
+
+audio {
+	width: 100%;
 	display: block;
 }
 

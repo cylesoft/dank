@@ -75,11 +75,11 @@ if ($current_user['loggedin']) {
 					<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
 						<!-- <?php echo print_r($post, true); ?> -->
 						<?php
-						$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? $post['username'] : 'Anonymous');
+						$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
 						if ($single_post_mode) {
-							?><p class="post-info"><a href="/by/<?php echo $poster_username; ?>"><?php echo $poster_username; ?></a> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
+							?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
 						} else {
-							?><p class="post-info"><a href="/by/<?php echo $poster_username; ?>"><?php echo $poster_username; ?></a> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
+							?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
 						}
 						?>
 						<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
