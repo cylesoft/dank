@@ -2,7 +2,7 @@
 
 /*
 
-	LOGIN CHECKING
+	SOME DANK LOGIN CHECKING
 		cyle gage, 2015
 
 */
@@ -18,7 +18,7 @@ $current_user = array(
 
 $return_to = '/'; // where are they going after successful login?
 $session_cookie_name = 'dank-session';
-$session_cookie_domain = 'dankme.me';
+$session_cookie_domain = 'dankest.website';
 
 function get_userlevel($user_id) {
 	global $mysqli;

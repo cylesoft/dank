@@ -1,6 +1,6 @@
 <div class="section group header">
 	<div class="col s8 text-box">
-		<h1><a href="/">dankmeme</a></h1>
+		<h1><a href="/">dankest.website</a></h1>
 	</div>
 	<div class="col s4 text-box">
 		<?php

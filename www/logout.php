@@ -3,7 +3,7 @@
 // oh fuck, log em out...
 
 $session_cookie_name = 'dank-session';
-$session_cookie_domain = 'dankme.me';
+$session_cookie_domain = 'dankest.website';
 
 if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]) != '') { // user has a session already?
 	// delete the saved session token from the database

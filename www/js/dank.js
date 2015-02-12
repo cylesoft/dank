@@ -1,9 +1,9 @@
 var max_file_bytes;
 
-window.onload = init_dankmeme;
+window.onload = init_dank;
 
-function init_dankmeme() {
-	console.log('initializing dankmeme systems...');
+function init_dank() {
+	console.log('initializing dank systems...');
 	// Check for the various File API support.
 	if (document.getElementById('new-post-form') != undefined) {
 		max_file_bytes = document.getElementById('max-file-bytes').value * 1;
