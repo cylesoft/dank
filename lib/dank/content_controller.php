@@ -14,7 +14,7 @@
 	 
 */
 
-$file_path_base = '/var/www/domains/dankme.me/www/files/'; // where to store files
+$file_path_base = '/var/www/domains/dankest.website/www/files/'; // where to store files
 $file_url_base = '/files/';
 
 require_once('dbconn_mysql.php');

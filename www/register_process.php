@@ -54,7 +54,7 @@ if ($check_for_username->num_rows > 0) {
 // check to make sure their invite code matches
 $new_invite_code_db = "'".$mysqli->escape_string(trim($_POST['i']))."'";
 $check_invite = $mysqli->query("SELECT code_id FROM invite_codes WHERE theemail=$new_user_email_db AND thecode=$new_invite_code_db AND beenused=0");
-if ($check_for_email->num_rows == 0) {
+if ($check_invite->num_rows == 0) {
 	die('invalid invite code, brah');
 }
 
