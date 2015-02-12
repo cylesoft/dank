@@ -83,7 +83,7 @@ if ($current_user['loggedin']) {
 						}
 						?>
 						<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
-						<p><img src="<?php echo $post['files'][0]['file_url']; ?>" /></p>
+						<p><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
 						<?php } ?>
 						<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
 						<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></audio></p>
