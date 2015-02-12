@@ -1,6 +1,6 @@
 <?php
 
-// dankmeme.
+// dank.
 
 require_once('../lib/dank/login_check.php');
 
@@ -40,11 +40,11 @@ if ($current_user['loggedin']) {
 <!--
       _             _                                  
      | |           | |                                 
-   __| | __ _ _ __ | | ___ __ ___   ___ _ __ ___   ___ 
-  / _` |/ _` | '_ \| |/ / '_ ` _ \ / _ \ '_ ` _ \ / _ \
- | (_| | (_| | | | |   <| | | | | |  __/ | | | | |  __/
-  \__,_|\__,_|_| |_|_|\_\_| |_| |_|\___|_| |_| |_|\___|
-                                                       
+   __| | __ _ _ __ | | __
+  / _` |/ _` | '_ \| |/ /
+ | (_| | (_| | | | |   <
+  \__,_|\__,_|_| |_|_|\_\
+
 -->
 <head>
 <?php require_once('../lib/dank/templates/head.php'); ?>
@@ -130,7 +130,7 @@ if ($current_user['loggedin']) {
 		?>
 		
 		<div class="about text-box">
-			<p><i><b>dankmeme</b></i> is a content sharing community full of the dankest shit on the internet</p>
+			<p><i><b>dankest.website</b></i> is a content sharing community full of the dankest shit on the internet</p>
 		</div>
 	</div>
 </div>
