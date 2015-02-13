@@ -100,6 +100,7 @@ function post_new_content($content) {
 			$content['type'] = 'image';
 			break;
 			case 'video/mp4':
+			case 'video/webm':
 			$content['type'] = 'video';
 			break;
 			case 'audio/mp3':
