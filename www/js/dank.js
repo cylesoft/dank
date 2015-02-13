@@ -16,6 +16,15 @@ function init_dank() {
 			dropZone.addEventListener('drop', handleFileDrop, false);
 		}
 	}
+	// make videos easier to use
+	var vids = document.getElementsByTagName('video');
+	for (var i = 0; i < vids.length; i++) {
+		//console.log(vids[i]);
+		vids[i].addEventListener('click', video_click);
+		vids[i].addEventListener('dblclick', video_doubleclick);
+		//vids[i].addEventListener('ended', video_done);
+		vids[i].volume = 1;
+	}
 }
 
 function handleFiles(files) {
@@ -72,4 +81,24 @@ function handleDragOver(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
+
+function video_done(e) {
+	this.currentTime = 0;
+}
+
+function video_click(e) {
+	//console.log(e);
+	//console.log(this);
+	if (this.paused == true) {
+		this.play();
+	} else {
+		this.pause();
+	}
+}
+
+function video_doubleclick(e) {
+	e.preventDefault();
+	this.currentTime = 0;
+	this.play();
 }

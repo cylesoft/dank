@@ -38,6 +38,10 @@ img, video {
 	display: block;
 }
 
+video {
+	cursor: pointer;
+}
+
 audio {
 	width: 100%;
 	display: block;

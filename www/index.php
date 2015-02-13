@@ -86,10 +86,10 @@ if ($current_user['loggedin']) {
 						<p><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
 						<?php } ?>
 						<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
-						<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>"></audio></p>
+						<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
 						<?php } ?>
 						<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-						<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>"></video></p>
+						<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
 						<?php } ?>
 						<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
 					</div>
