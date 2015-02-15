@@ -106,6 +106,9 @@ function post_new_content($content) {
 			case 'audio/mp3':
 			$content['type'] = 'audio';
 			break;
+			default:
+			unlink($content['php_file']['tmp_name']);
+			return array('ok' => false, 'error' => 'you uploaded an unsupported file type');
 		}
 		$file_extension = strtolower(substr(strrchr($content['php_file']['name'], "."), 1));
 		$unique_file_id = uniqid();

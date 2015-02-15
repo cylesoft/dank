@@ -7,13 +7,16 @@ function init_dank() {
 	// Check for the various File API support.
 	if (document.getElementById('new-post-form') != undefined) {
 		max_file_bytes = document.getElementById('max-file-bytes').value * 1;
+		var dropzone = document.getElementById('file-drop-zone');
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
 			// supported!
 			document.getElementById('files').addEventListener('change', handleFileSelect, false);
 			// Setup the dnd listeners.
-			var dropZone = document.getElementById('file-drop-zone');
-			dropZone.addEventListener('dragover', handleDragOver, false);
-			dropZone.addEventListener('drop', handleFileDrop, false);
+			dropzone.addEventListener('dragover', handleDragOver, false);
+			dropzone.addEventListener('drop', handleFileDrop, false);
+		} else {
+			// nevermind -- get rid of it
+			dropzone.parentNode.removeChild(dropzone);
 		}
 	}
 	// make videos easier to use

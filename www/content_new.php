@@ -20,7 +20,7 @@ require_once('../lib/dank/login_check.php');
 		<p id="file-list"></p>
 		<p>Basic Markdown supported in the text area (bold, italics, headers, lists, code). Links, #hashtags, @mentions will be auto-parsed.</p>
 		<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
-		<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?></p>
+		<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 		<p id="file-drop-zone">Or drop files here.</p>
 		<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public?</label></p>
 		<p><label><input type="checkbox" name="anon" value="1" /> post anonymously?</label></p>

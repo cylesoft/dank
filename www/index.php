@@ -110,7 +110,7 @@ if ($current_user['loggedin']) {
 			<input type="hidden" id="max-file-bytes" value="20000000" />
 			<p id="file-list"></p>
 			<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
-			<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?></p>
+			<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 			<p id="file-drop-zone">Or drop files here.</p>
 			<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public?</label></p>
 			<p><label><input type="checkbox" name="anon" value="1" /> post anonymously?</label></p>
