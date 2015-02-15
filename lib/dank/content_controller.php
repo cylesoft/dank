@@ -46,6 +46,12 @@ function parse_text($text) {
 	return array('text' => $t, 'links' => $link_matches[0], 'mentions' => $mention_matches[1], 'hashtags' => $hashtag_matches[1]);
 }
 
+/*
+	
+	content system	
+	
+*/
+
 // deal with saving new content to the database
 function post_new_content($content) {
 	
@@ -172,7 +178,7 @@ function post_new_content($content) {
 		$return_result = array('ok' => false, 'error' => 'mysql error on new post: '.$mysqli->error);
 	} else {
 		$new_post_id = $mysqli->insert_id;
-		$return_result = array('ok' => true); // so far so good
+		$return_result = array('ok' => true, 'id' => $new_post_id); // so far so good
 		// ok deal with file row if there is one to be made
 		if (isset($new_file_info) && is_array($new_file_info) && count($new_file_info) > 0) {
 			$new_file_uniqid_db = "'".$mysqli->escape_string($new_file_info['uniqid'])."'";
@@ -277,4 +283,92 @@ function edit_content($content) {
 // deal with deleting a piece of content
 function delete_content($content_id) {
 	global $mysqli;
+}
+
+/*
+	
+	comment system	
+	
+*/
+
+// deal with fetching comments for a post
+function fetch_comments_for_post($post_id) {
+	global $mysqli;
+	$post_id = (int) $post_id * 1;
+	$comments = array(); // will hold comments to be given back
+	$get_comments = $mysqli->query('SELECT comments.comment_id, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE post_id='.$post_id.' ORDER BY comment_id ASC');
+	if ($get_comments->num_rows > 0) {
+		while ($comment = $get_comments->fetch_assoc()) {
+			$comments[] = $comment;
+		}
+	}
+	return $comments;
+}
+
+// deal with fetching a specific comment
+function fetch_comment($comment_id) {
+	global $mysqli;
+	$comment_id = (int) $comment_id * 1;
+	$comment = array(); // will hold comment to be given back
+	$get_comment = $mysqli->query('SELECT comments.comment_id, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE comment_id='.$comment_id);
+	if ($get_comment->num_rows == 1) {
+		$comment = $get_comment->fetch_assoc();
+	}
+	return $comment;
+}
+
+// deal with saving a new comment
+function post_new_comment($comment) {
+	
+	// expecting $comment['post_id'], $comment['text'], $comment['user_id']
+	
+	global $mysqli;
+	
+	$rawtext_db = "'".$mysqli->escape_string($comment['text'])."'";
+	
+	// inspect the incoming text for
+	// links (also: youtube, vimeo, jpg/gif/png?)
+	// tags (#whatever)
+	// user mentions (@whoever)
+	// and transform them accordingly
+	
+	$reformatted_result = parse_text($comment['text']);
+	
+	// use the ['links'] and ['mentions'] and ['hashtags'] keys for anything...?
+	// check to see if the @mentioned user(s) even exist?
+	// notify user(s) of their mention(s)? index them?
+	// index the hashtag reference(s) somewhere?
+	// check the links to see if they're images/audio/video?
+	
+	$reformatted_text = $reformatted_result['text'];
+	
+	$thetext_db = "'".$mysqli->escape_string($reformatted_text)."'";
+	
+	$user_id_db = (int) $comment['user_id'] * 1;
+	$post_id_db = (int) $comment['post_id'] * 1;
+	
+	$now_db = time();
+	
+	// insert into database
+	$insert_comment_into_db = $mysqli->query("INSERT INTO comments (post_id, user_id, thecomment, rawcomment, posted_ts, updated_ts) VALUES ($post_id_db, $user_id_db, $thetext_db, $rawtext_db, $now_db, $now_db)");
+	if (!$insert_comment_into_db) {
+		$return_result = array('ok' => false, 'error' => 'mysql error on new post: '.$mysqli->error);
+	} else {
+		$new_comment_id = $mysqli->insert_id;
+		$return_result = array( 'ok' => true, 'id' => $new_comment_id );
+	}
+	
+	// send back array( 'ok' => true/false, 'error' => 'if needed' );
+	return $return_result;
+}
+
+// render the comment bit
+function render_comment($comment) {
+	// expecting: $comment['thecomment'], $comment['username'], $comment['posted_ts'], $comment['updated_ts']
+	$render = '';
+	$render .= '<div class="comment">';
+	$render .= '<p>'.$comment['thecomment'].'</p>';
+	$render .= '<p class="comment-byline">'.$comment['username'].' '.date('m/d/Y h:i a', $comment['posted_ts']).'</p>';
+	$render .= '</div>'."\n";
+	return $render;
 }

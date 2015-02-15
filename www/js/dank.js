@@ -2,6 +2,7 @@ var max_file_bytes;
 
 window.onload = init_dank;
 
+// start up the dankness
 function init_dank() {
 	console.log('initializing dank systems...');
 	// handle nsfw toggle clicks
@@ -32,6 +33,13 @@ function init_dank() {
 		vids[i].addEventListener('dblclick', video_doubleclick);
 		//vids[i].addEventListener('ended', video_done);
 		vids[i].volume = 1;
+	}
+	// handle comments
+	var comment_btns = document.getElementsByClassName('post-comment-btn');
+	if (comment_btns != undefined && comment_btns.length > 0) {
+		for (var i = 0; i < comment_btns.length; i++) {
+			comment_btns[i].addEventListener('click', comment_btn_click);
+		}
 	}
 }
 
@@ -125,7 +133,43 @@ function nsfw_toggle_click(e) {
 	window.location = './';
 }
 
+function comment_btn_click(e) {
+	//console.log(e);
+	var comment_form_children = e.target.parentNode.children;
+	//console.log(comment_form_children);
+	var post_id = comment_form_children[0].value * 1;
+	var comment_text = comment_form_children[1].value;
+	comment_form_children[2].value = 'Posting...';
+	comment_form_children[2].disabled = true;
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				console.log('comment posted');
+				var comment_lists = document.getElementsByClassName('comments-list');
+				for (var i = 0; i < comment_lists.length; i++) {
+					if (comment_lists[i].getAttribute('data-post-id') * 1 == post_id) {
+						comment_lists[i].innerHTML += xmlhttp.responseText;
+					}
+				}
+				comment_form_children[1].value = '';
+				comment_form_children[2].value = 'Post »';
+				comment_form_children[2].disabled = false;
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to post the comment: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to post the comment: ' + xmlhttp.responseText);
+			} else {
+				console.error('something else other than 200 was returned: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/comment/process/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("a=n&post_id=" + post_id + "&comment=" + encodeURIComponent(comment_text));
+}
 
+// cookie handling
 // thx https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
 var docCookies = {
   getItem: function (sKey) {

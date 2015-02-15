@@ -66,7 +66,7 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 		<?php
 		if (isset($post_filter['tag'])) {
 			?><h2>shit tagged #<?php echo $post_filter['tag']; ?></h2><?php
-		} else if ($post_filter['user']) {
+		} else if (isset($post_filter['user'])) {
 			?><h2>shit by <?php echo $post_filter['user']; ?></h2><?php
 		}
 		?>
@@ -78,30 +78,53 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			} else {
 				foreach ($posts as $post) {
 					?>
-					<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
-						<!-- <?php echo print_r($post, true); ?> -->
+					<div class="post-wrap">
+						<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
+							<!-- <?php echo print_r($post, true); ?> -->
+							<?php
+							$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
+							if ($single_post_mode) {
+								?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
+							} else {
+								?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
+							}
+							?>
+							<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
+							<p><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
+							<?php } ?>
+							<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
+							<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
+							<?php } ?>
+							<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
+							<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
+							<?php } ?>
+							<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
+						</div>
 						<?php
-						$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
-						if ($single_post_mode) {
-							?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
-						} else {
-							?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
-						}
+						$comments = fetch_comments_for_post($post['post_id']);
+						if ($current_user['loggedin'] || count($comments) > 0) {
 						?>
-						<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
-						<p><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
-						<?php } ?>
-						<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
-						<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
-						<?php } ?>
-						<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-						<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
-						<?php } ?>
-						<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
+						<div class="comments">
+							<div class="comments-list" data-post-id="<?php echo $post['post_id']; ?>">
+							<?php
+							foreach ($comments as $comment) {
+								echo render_comment($comment);
+							}
+							?>
+							</div>
+							<?php if ($current_user['loggedin']) { ?>
+							<div class="new-comment-form <?php echo ((count($comments) > 0) ? 'not-alone' : ''); ?>">
+								<input type="hidden" value="<?php echo $post['post_id']; ?>" /> <input type="text" class="your-comment" placeholder="Insert your comment here..." /> <input type="button" class="small post-comment-btn" value="Post &raquo;" />
+							</div>
+							<?php } ?>
+						</div>
+						<?php
+						} // end comments check
+						?>
 					</div>
 					<?php
-				}
-			}
+				} // end posts loop
+			} // end posts fetch error check
 			?>
 		</div>
 	</div>

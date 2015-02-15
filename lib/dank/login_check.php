@@ -32,6 +32,18 @@ function get_userlevel($user_id) {
 	}
 }
 
+function get_username($user_id) {
+	global $mysqli;
+	$user_id = (int) $user_id * 1;
+	$get_user_row = $mysqli->query("SELECT username FROM users WHERE user_id=$user_id");
+	if ($get_user_row->num_rows == 1) {
+		$user_row = $get_user_row->fetch_assoc();
+		return trim($user_row['username']);
+	} else {
+		return 'unknown user';
+	}
+}
+
 function update_last_activity($user_id) {
 	global $mysqli;
 	$user_id = (int) $user_id * 1;
@@ -74,6 +86,7 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 			$current_user_id = $user_session_row['user_id'];
 			$current_user['loggedin'] = true;
 			$current_user['userid'] = $current_user_id;
+			$current_user['username'] = get_username($current_user_id);
 			$current_user['userlevel'] = get_userlevel($current_user_id);
 			$new_session_key_expires = time() + (60*60*24*30);
 			setcookie($session_cookie_name, $user_session_complete_token, $new_session_key_expires, '/', $session_cookie_domain);
@@ -138,6 +151,7 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 		// ok, cool
 		$current_user['loggedin'] = true;
 		$current_user['userid'] = (int) $current_user_row['user_id'] * 1;
+		$current_user['username'] = trim($current_user_row['username']);
 		$current_user_id = $current_user['userid'];
 		$current_user['userlevel'] = get_userlevel($current_user_id);
 		update_last_activity($current_user_id);
