@@ -238,6 +238,11 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 			$query_where_list .= 'rawtext LIKE \'%#'.$mysqli->escape_string($filter['tag']).'%\'';
 		}
 		
+		if (isset($filter['show_nsfw']) && $filter['show_nsfw'] == false) {
+			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
+			$query_where_list .= 'nsfw=0';
+		}
+		
 		$query_where_clause .= $query_where_list;
 		
 	}

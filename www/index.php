@@ -33,6 +33,12 @@ if ($current_user['loggedin']) {
 	$post_filter['visibility'] = 6;
 }
 
+if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1') {
+	$post_filter['show_nsfw'] = false;
+} else {
+	$post_filter['show_nsfw'] = true;
+}
+
 ?><!doctype html>
 <html>
 <?php echo '<!-- '.print_r($_GET, true).' -->'; ?>
@@ -132,6 +138,11 @@ if ($current_user['loggedin']) {
 		<div class="about text-box">
 			<p><i><b>dankest.website</b></i> is a content sharing community full of the dankest shit on the internet</p>
 		</div>
+		
+		<div class="text-box">
+			<p><form id="hide-nsfw-form" action="./" method="post"><label>Hide NSFW content? <input type="checkbox" value="1" name="hide_nsfw" id="nsfw-hide-toggle" <?php echo (($post_filter['show_nsfw']) ? '': 'checked="checked"'); ?> /></label></form></p>
+		</div>
+		
 	</div>
 </div>
 
