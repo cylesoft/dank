@@ -4,12 +4,15 @@ window.onload = init_dank;
 
 // start up the dankness
 function init_dank() {
+	
 	console.log('initializing dank systems...');
+	
 	// handle nsfw toggle clicks
 	var nsfw_toggle = document.getElementById('nsfw-hide-toggle');
 	if (nsfw_toggle != undefined) {
 		nsfw_toggle.addEventListener('click', nsfw_toggle_click);
 	}
+	
 	// Check for the various File API support.
 	if (document.getElementById('new-post-form') != undefined) {
 		max_file_bytes = document.getElementById('max-file-bytes').value * 1;
@@ -25,6 +28,7 @@ function init_dank() {
 			dropzone.parentNode.removeChild(dropzone);
 		}
 	}
+	
 	// make videos easier to use
 	var vids = document.getElementsByTagName('video');
 	for (var i = 0; i < vids.length; i++) {
@@ -34,6 +38,7 @@ function init_dank() {
 		//vids[i].addEventListener('ended', video_done);
 		vids[i].volume = 1;
 	}
+	
 	// handle comments
 	var comment_btns = document.getElementsByClassName('post-comment-btn');
 	if (comment_btns != undefined && comment_btns.length > 0) {
@@ -41,6 +46,7 @@ function init_dank() {
 			comment_btns[i].addEventListener('click', comment_btn_click);
 		}
 	}
+	
 	// handle post approval
 	var approve_btns = document.getElementsByClassName('approve-post');
 	if (approve_btns != undefined && approve_btns.length > 0) {
@@ -50,35 +56,34 @@ function init_dank() {
 	}
 }
 
+// handle incoming files
 function handleFiles(files) {
 	// files is a FileList of File objects. List some properties.
-	var output = [];
-	var total_bytes = 0;
+	var output = []; // this'll hold our output html
+	var total_bytes = 0; // track total size
 	for (var i = 0, f; f = files[i]; i++) {
-		total_bytes += f.size;
+		total_bytes += f.size; // add to total size so far
+		// show some file info
 		output.push('<strong>', escape(f.name), '</strong> (', 
 			f.type || 'n/a', ') - ',
 			f.size, ' bytes;',
 		'');
-		
-		// Only process image files.
+		// only process image files
 		if (!f.type.match('image.*')) {
 			continue;
 		}
-		
+		// init a new file reader
 		var reader = new FileReader();
-		
-		// Closure to capture the file information.
+		// closure to capture the file information
 		reader.onload = (function(theFile) {
 			return function(e) {
-				// Render thumbnail.
+				// render thumbnail
 				var span = document.createElement('span');
 				span.innerHTML = ['<img class="thumb" src="', e.target.result, '" title="', escape(theFile.name), '"/>'].join('');
 				document.getElementById('file-list').insertBefore(span, null);
 			};
 		})(f);
-		
-		// Read in the image file as a data URL.
+		// read in the image file as a data URL
 		reader.readAsDataURL(f);
 	}
 	document.getElementById('file-list').innerHTML = output.join('');
@@ -87,29 +92,35 @@ function handleFiles(files) {
 	}
 }
 
+// handle a file being dropped into the drop zone
 function handleFileDrop(e) {
 	e.stopPropagation();
     e.preventDefault();
     var files = e.dataTransfer.files; // FileList object.
+    // give it to the file input instead of processing it yourself
     document.getElementById('files').files = files;
     //handleFiles(files);
 }
 
+// handle a file being selected with the input box
 function handleFileSelect(e) {
 	var files = e.target.files; // FileList object
 	handleFiles(files);
 }
-	
+
+// handle dragging a file over the dropzone
 function handleDragOver(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
 
+// when a video is done, rewind
 function video_done(e) {
 	this.currentTime = 0;
 }
 
+// clicking on a video once plays/pauses it
 function video_click(e) {
 	//console.log(e);
 	//console.log(this);
@@ -120,12 +131,14 @@ function video_click(e) {
 	}
 }
 
+// double clicking on a video rewinds it and plays it again!
 function video_doubleclick(e) {
 	e.preventDefault();
 	this.currentTime = 0;
 	this.play();
 }
 
+// deal with somebody clicking the NSFW toggle
 function nsfw_toggle_click(e) {
 	//console.log(e.target.checked);
 	if (e.target.checked) {
@@ -140,6 +153,7 @@ function nsfw_toggle_click(e) {
 	window.location = './';
 }
 
+// deal with somebody making a comment
 function comment_btn_click(e) {
 	//console.log(e);
 	var comment_form_children = e.target.parentNode.children;
@@ -176,6 +190,7 @@ function comment_btn_click(e) {
 	xmlhttp.send("a=n&post_id=" + post_id + "&comment=" + encodeURIComponent(comment_text));
 }
 
+// deal with somebody clicking that approve button
 function approve_btn_click(e) {
 	//console.log(e);
 	var post_id = e.target.getAttribute('data-post-id');
