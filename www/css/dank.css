@@ -307,6 +307,10 @@ div.post.members-only {
 	background-color: rgb(253, 218, 255);
 }
 
+div.post.peer-approval {
+	background-color: rgb(255, 218, 218);
+}
+
 span.label {
 	border: 1px dotted rgba(0, 0, 0, 0.5);
 	border-radius: 3px;
@@ -353,6 +357,10 @@ div.post p.post-content {
 	color: red;
 	text-decoration: none;
 	border-bottom: 1px dotted blue;
+}
+
+.approval-form {
+	font-style: italic;
 }
 
 .button.approve-post.small {

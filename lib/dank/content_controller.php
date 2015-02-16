@@ -370,7 +370,7 @@ function render_post($post, $current_user, $single_post_mode = false) {
 		$render .= '<p>'.$post['thetext'].'</p>';
 	}
 	if (in_array('peer-approval', $post_classes) && $current_user['loggedin'] && $current_user['userid'] != $post['user_id']) {
-		$render .= '<p>Approve post? It will become public. <input type="button" value="&#10004; story checks out" class="button green small approve-post" data-post-id="'.$post['post_id'].'" /></p>';
+		$render .= '<p class="approval-form">Approve post? It will become public. <input type="button" value="&#10004; story checks out" class="button green small approve-post" data-post-id="'.$post['post_id'].'" /></p>';
 	}
 	$render .= '</div>'; // end of actual post div
 	// get comments for this post
