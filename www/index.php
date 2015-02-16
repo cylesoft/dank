@@ -29,6 +29,9 @@ if (isset($_GET['u']) && trim($_GET['u']) != '' && trim($_GET['u']) != '/') {
 
 if ($current_user['loggedin']) {
 	$post_filter['visibility'] = $current_user['userlevel'];
+	if (isset($_GET['approval-queue'])) {
+		$post_filter['approval-queue'] = true;
+	}
 } else {
 	$post_filter['visibility'] = 6;
 }
@@ -68,6 +71,8 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			?><h2>shit tagged #<?php echo $post_filter['tag']; ?></h2><?php
 		} else if (isset($post_filter['user'])) {
 			?><h2>shit by <?php echo $post_filter['user']; ?></h2><?php
+		} else if (isset($post_filter['approval-queue'])) {
+			?><h2>shit that needs approval</h2><?php
 		}
 		?>
 		<div class="posts">
@@ -77,10 +82,14 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			if (isset($posts['error'])) {
 				echo '<pre>'.$posts['error'].'</pre>';
 			} else {
-				// ok -- show each post
-				foreach ($posts as $post) {
-					// render em
-					echo render_post($post, $current_user, $single_post_mode);
+				if (count($posts) > 0) {
+					// ok -- show each post
+					foreach ($posts as $post) {
+						// render em
+						echo render_post($post, $current_user, $single_post_mode);
+					}
+				} else {
+					echo '<p>No posts to show here...</p>';
 				}
 			} // end posts fetch error check
 			?>
@@ -90,6 +99,14 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 		
 		<?php
 		if ($current_user['loggedin']) {
+			
+			$how_many_need_approval = get_num_unapproved_posts();
+			if ($how_many_need_approval > 0) {
+				?><div class="approval-queue text-box">
+					<p><a href="./?approval-queue"><?php echo $how_many_need_approval; ?> posts</a> need approval!</p>
+				</div><?php
+			}
+			
 		?>
 		<div class="new-post">
 			<form id="new-post-form" enctype="multipart/form-data" action="/content/process/" method="post">

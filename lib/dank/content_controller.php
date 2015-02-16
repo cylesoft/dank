@@ -231,7 +231,11 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 		
 		if (isset($filter['visibility']) && is_numeric($filter['visibility'])) {
 			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
-			$query_where_list .= 'visibility >= '.((int) $filter['visibility'] * 1);
+			if (isset($filter['approval-queue']) && $filter['approval-queue'] == true) {
+				$query_where_list .= 'visibility = 5';
+			} else {
+				$query_where_list .= 'visibility >= '.((int) $filter['visibility'] * 1);
+			}
 		}
 		
 		if (isset($filter['user']) && trim($filter['user']) != '') {
@@ -283,6 +287,13 @@ function edit_content($content) {
 // deal with deleting a piece of content
 function delete_content($content_id) {
 	global $mysqli;
+}
+
+// get the number of currently unapproved post
+function get_num_unapproved_posts() {
+	global $mysqli;
+	$get_num = $mysqli->query('SELECT post_id FROM posts WHERE visibility=5');
+	return $get_num->num_rows;
 }
 
 // deal with approving of a post
