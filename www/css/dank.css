@@ -144,7 +144,7 @@ input:focus, textarea:focus {
 
 input[type="submit"], input[type="button"] {
 	cursor: pointer;
-	padding: 0.8rem 1rem;
+	padding: 0.7rem 1rem;
 	color: white;
 	border-radius: 3px;
 	text-align: center;
@@ -187,7 +187,7 @@ table td {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	padding: 0.8rem 1rem;
+	padding: 0.7rem 1rem;
 	color: white;
 	background-color: #27981B;
 	border-radius: 3px;
@@ -204,7 +204,7 @@ table td {
 
 .button.small, input[type="submit"].small, input[type="button"].small {
 	font-size: 0.8rem;
-	padding: 0.7rem;
+	padding: 0.6rem;
 }
 
 .button.large, input[type="submit"].large, input[type="button"].large {

@@ -356,7 +356,7 @@ function render_post($post, $current_user, $single_post_mode = false) {
 	}
 	// start actual post content div
 	$render .= '<div data-post-id="'.$post['post_id'].'" class="'.implode(' ', $post_classes).'">';
-	$render .= '<!-- '.print_r($post, true).'-->'; // some debug info
+	//$render .= '<!-- '.print_r($post, true).'-->'; // some debug info
 	// show the username based on whether anon or not
 	$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
 	// switch for single post mode, show timestamp if true
