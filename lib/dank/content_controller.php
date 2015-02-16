@@ -292,8 +292,9 @@ function delete_content($content_id) {
 // get the number of currently unapproved post
 function get_num_unapproved_posts() {
 	global $mysqli;
-	$get_num = $mysqli->query('SELECT post_id FROM posts WHERE visibility=5');
-	return $get_num->num_rows;
+	$get_num = $mysqli->query('SELECT COUNT(post_id) AS count FROM posts WHERE visibility=5');
+	$num_result = $get_num->fetch_assoc();
+	return $num_result['count'];
 }
 
 // deal with approving of a post
