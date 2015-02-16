@@ -65,7 +65,7 @@ $invite_row = $check_invite->fetch_assoc();
 $new_user_pwd_hash = password_hash(trim($_POST['p1']), PASSWORD_DEFAULT);
 $new_user_pwd_hash_db = "'".$mysqli->escape_string($new_user_pwd_hash)."'";
 
-$new_user_row = $mysqli->query("INSERT INTO users (username, email, steakonions, last_activity_ts, tsc) VALUES ($new_username_db, $new_user_email_db, $new_user_pwd_hash_db, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+$new_user_row = $mysqli->query("INSERT INTO users (username, userlevel, email, steakonions, last_activity_ts, tsc) VALUES ($new_username_db, 3, $new_user_email_db, $new_user_pwd_hash_db, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
 if (!$new_user_row) {
 	die('error creating new user: '.$mysqli->error);
 }
