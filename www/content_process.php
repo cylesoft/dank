@@ -56,9 +56,9 @@ if ($action == 'n') {
 	}
 	
 	if (isset($_POST['public']) && trim($_POST['public']) == '1') {
-		$the_content['visibility'] = 6;
+		$the_content['visibility'] = 5; // requires peer approval for public
 	} else {
-		$the_content['visibility'] = 3;
+		$the_content['visibility'] = 3; // members only
 	}
 	
 	$post_result = post_new_content($the_content);
@@ -78,5 +78,25 @@ if ($action == 'n') {
 } else if ($action == 'd') {
 	
 	// delete content
+	
+} else if ($action == 'a') {
+	
+	// approve content
+	
+	if (!isset($_POST['post_id']) || !is_numeric($_POST['post_id'])) {
+		header('HTTP/1.1 400 Bad Request');
+		die('no post ID given');
+	}
+	
+	$post_id = (int) $_POST['post_id'] * 1;
+	
+	$approve_result = approve_post($post_id, $current_user);
+	
+	if ($approve_result['ok'] == true) {
+		echo 'ok';
+	} else {
+		header('HTTP/1.1 500 Internal Server Error');
+		echo '<pre>approve_post: '.print_r($approve_result, true).'</pre>';
+	}
 	
 }

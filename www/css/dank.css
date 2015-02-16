@@ -307,6 +307,24 @@ div.post.members-only {
 	background-color: rgb(253, 218, 255);
 }
 
+span.label {
+	border: 1px dotted rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+	background-color: rgba(255, 255, 255, 0.5);
+	padding: 0 0.4rem;
+	color: rgba(0,0,0,0.6);
+	cursor: default;
+}
+
+span.label.members-only {
+	
+}
+
+span.label.peer-approval {
+	border-color: red;
+	background-color: rgba(255, 0, 0, 0.2);
+}
+
 div.post p {
 	padding: 0.25rem 0.75rem;
 }
@@ -335,6 +353,10 @@ div.post p.post-content {
 	color: red;
 	text-decoration: none;
 	border-bottom: 1px dotted blue;
+}
+
+.button.approve-post.small {
+	padding: 0.1rem 0.3rem;
 }
 
 div.new-post {

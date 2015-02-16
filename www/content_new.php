@@ -22,7 +22,7 @@ require_once('../lib/dank/login_check.php');
 		<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
 		<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 		<p id="file-drop-zone">Or drop files here.</p>
-		<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public?</label></p>
+		<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public? (requires peer approval)</label></p>
 		<p><label><input type="checkbox" name="anon" value="1" /> post anonymously?</label></p>
 		<p><label><input type="checkbox" name="nsfw" value="1" /> nsfw?</label></p>
 		<p><input type="submit" class="small green" value="post that shit &raquo;" /></p>

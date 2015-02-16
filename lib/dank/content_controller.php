@@ -285,6 +285,117 @@ function delete_content($content_id) {
 	global $mysqli;
 }
 
+// deal with approving of a post
+function approve_post($post_id, $current_user) {
+	global $mysqli;
+	$result = array('ok' => false, 'error' => 'unknown');
+	$post_id = (int) $post_id * 1;
+	// get post, ensure it's visibility = 5 currently
+	// ensure the user approving it is not the post's author
+	$get_post = $mysqli->query("SELECT user_id, visibility FROM posts WHERE post_id=$post_id");
+	if (!$get_post) {
+		$result = array('ok' => false, 'error' => 'error with post approval fetch query: ' . $mysqli->error);
+	} else if ($get_post->num_rows != 1) {
+		$result = array('ok' => false, 'error' => 'no post found with ID '.$post_id);
+	} else {
+		$post_info = $get_post->fetch_assoc();
+		if ($post_info['visibility'] != 5) {
+			$result = array('ok' => false, 'error' => 'post is not pending approval');
+		} else if ($post_info['user_id'] == $current_user['userid']) {
+			$result = array('ok' => false, 'error' => 'you cannot approve your own post');
+		} else {
+			// we're good, approve it
+			$approve_the_post = $mysqli->query("UPDATE posts SET visibility=6 WHERE post_id=$post_id");
+			if (!$approve_the_post) {
+				$result = array('ok' => false, 'error' => 'error with post approval update query: ' . $mysqli->error);
+			} else {
+				$result = array('ok' => true);
+			}
+		}
+	}
+	return $result;
+}
+
+// render the post bit
+function render_post($post, $current_user, $single_post_mode = false) {
+	$render = ''; // we start blank
+	$render .= '<div class="post-wrap">'; // start post-wrap
+	$post_classes = array();
+	$post_classes[] = 'post';
+	$post_classes[] = $post['post_type'];
+	switch ($post['visibility']) {
+		case 1:
+		case 2:
+		case 3:
+		$post_classes[] = 'members-only';
+		break;
+		case 4:
+		case 5:
+		$post_classes[] = 'peer-approval';
+		break;
+		case 6:
+		$post_classes[] = 'public';
+		break;
+		default:
+		$post_classes[] = 'unknown-visibility';
+	}
+	// start actual post content div
+	$render .= '<div data-post-id="'.$post['post_id'].'" class="'.implode(' ', $post_classes).'">';
+	$render .= '<!-- '.print_r($post, true).'-->'; // some debug info
+	// show the username based on whether anon or not
+	$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
+	// switch for single post mode, show timestamp if true
+	$status_label = '';
+	if (in_array('members-only', $post_classes)) {
+		$status_label = '<span class="label members-only">Members-only</span>';
+	} else if (in_array('peer-approval', $post_classes)) {
+		$status_label = '<span class="label peer-approval">Requires approval</span>';
+	}
+	if ($single_post_mode) {
+		$render .= '<p class="post-info">'.$status_label.' '.$poster_username.' '.date('Y-m-d h:i A', $post['posted_ts']).'</p>';
+	} else {
+		// permalink to this post
+		$render .= '<p class="post-info">'.$status_label.' '.$poster_username.' <a href="/content/'.$post['post_id'].'/">&raquo;</a></p>';
+	}
+	// post content itself, whether image or audio or video
+	if ($post['post_type'] == 'image' && isset($post['files'])) {
+		$render .= '<p class="post-content"><a href="'.$post['files'][0]['file_url'].'"><img src="'.$post['files'][0]['file_url'].'" /></a></p>';
+	} else if ($post['post_type'] == 'audio' && isset($post['files'])) {
+		$render .= '<p class="post-content"><audio controls="controls" src="'.$post['files'][0]['file_url'].'">Looks like your browser doesn\'t support this HTML5 audio. Use Chrome.</audio></p>';
+	} else if ($post['post_type'] == 'video' && isset($post['files'])) {
+		$render .= '<p class="post-content"><video controls="controls" loop="loop" src="'.$post['files'][0]['file_url'].'">Looks like your browser doesn\'t support this HTML5 video. Use Chrome.</video></p>';
+	}
+	// show text, if any was included
+	if (isset($post['thetext']) && trim($post['thetext']) != '') {
+		$render .= '<p>'.$post['thetext'].'</p>';
+	}
+	if (in_array('peer-approval', $post_classes) && $current_user['loggedin'] && $current_user['userid'] != $post['user_id']) {
+		$render .= '<p>Approve post? It will become public. <input type="button" value="&#10004; story checks out" class="button green small approve-post" data-post-id="'.$post['post_id'].'" /></p>';
+	}
+	$render .= '</div>'; // end of actual post div
+	// get comments for this post
+	$comments = fetch_comments_for_post($post['post_id']);
+	if ($current_user['loggedin'] || count($comments) > 0) {
+		// there are comments, or they're logged in, either way show the comments block
+		$render .= '<div class="comments">';
+		// list actual comments
+		$render .= '<div class="comments-list" data-post-id="'.$post['post_id'].'">';
+		foreach ($comments as $comment) {
+			$render .= render_comment($comment); // render each comment bit
+		}
+		$render .= '</div>'; // end comments list div
+		// if logged in, allow new comments
+		if ($current_user['loggedin']) {
+			$render .= '<div class="new-comment-form '.((count($comments) > 0) ? 'not-alone' : '').'">';
+			$render .= '<input type="hidden" value="'.$post['post_id'].'" /> <input type="text" class="your-comment" placeholder="Insert your comment here..." /> <input type="button" class="small post-comment-btn" value="Post &raquo;" />';
+			$render .= '</div>';
+		}
+		$render .= '</div>'; // end comments div
+	} // end comments check
+	$render .= '</div>'."\n"; // end post-wrap div
+	return $render; // spit it out
+}
+
 /*
 	
 	comment system	

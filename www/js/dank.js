@@ -41,6 +41,13 @@ function init_dank() {
 			comment_btns[i].addEventListener('click', comment_btn_click);
 		}
 	}
+	// handle post approval
+	var approve_btns = document.getElementsByClassName('approve-post');
+	if (approve_btns != undefined && approve_btns.length > 0) {
+		for (var i = 0; i < approve_btns.length; i++) {
+			approve_btns[i].addEventListener('click', approve_btn_click);
+		}
+	}
 }
 
 function handleFiles(files) {
@@ -160,13 +167,39 @@ function comment_btn_click(e) {
 			} else if (xmlhttp.status == 500) {
 				console.error('There was an error 500 when trying to post the comment: ' + xmlhttp.responseText);
 			} else {
-				console.error('something else other than 200 was returned: ' + xmlhttp.responseText);
+				console.error('Something else other than 200 was returned when posting the comment: ' + xmlhttp.responseText);
 			}
 		}
 	}
 	xmlhttp.open("POST", "/comment/process/", true);
 	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlhttp.send("a=n&post_id=" + post_id + "&comment=" + encodeURIComponent(comment_text));
+}
+
+function approve_btn_click(e) {
+	//console.log(e);
+	var post_id = e.target.getAttribute('data-post-id');
+	console.log('approving post #'+post_id);
+	e.target.setAttribute('value', 'Approving...');
+	e.target.disabled = true;
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				console.log('post approved');
+				e.target.setAttribute('value', 'APPROVED.');
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to approve the post: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to approve the post: ' + xmlhttp.responseText);
+			} else {
+				console.error('Something other than 200 was returned when approving the post: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/content/process/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("a=a&post_id=" + post_id);
 }
 
 // cookie handling

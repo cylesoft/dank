@@ -73,57 +73,15 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 		<div class="posts">
 			<?php
 			$posts = fetch_content($post_filter);
+			// check for an error fetching the posts
 			if (isset($posts['error'])) {
 				echo '<pre>'.$posts['error'].'</pre>';
 			} else {
+				// ok -- show each post
 				foreach ($posts as $post) {
-					?>
-					<div class="post-wrap">
-						<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?> <?php echo (($post['visibility'] == 6) ? 'public' : 'members-only'); ?>">
-							<!-- <?php echo print_r($post, true); ?> -->
-							<?php
-							$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
-							if ($single_post_mode) {
-								?><p class="post-info"><?php echo $poster_username; ?> <?php echo date('Y-m-d h:i A', $post['posted_ts']); ?></p><?php
-							} else {
-								?><p class="post-info"><?php echo $poster_username; ?> <a href="/content/<?php echo $post['post_id']; ?>/">&raquo;</a></p><?php
-							}
-							?>
-							<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
-							<p class="post-content"><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
-							<?php } ?>
-							<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
-							<p class="post-content"><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
-							<?php } ?>
-							<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-							<p class="post-content"><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
-							<?php } ?>
-							<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
-						</div>
-						<?php
-						$comments = fetch_comments_for_post($post['post_id']);
-						if ($current_user['loggedin'] || count($comments) > 0) {
-						?>
-						<div class="comments">
-							<div class="comments-list" data-post-id="<?php echo $post['post_id']; ?>">
-							<?php
-							foreach ($comments as $comment) {
-								echo render_comment($comment);
-							}
-							?>
-							</div>
-							<?php if ($current_user['loggedin']) { ?>
-							<div class="new-comment-form <?php echo ((count($comments) > 0) ? 'not-alone' : ''); ?>">
-								<input type="hidden" value="<?php echo $post['post_id']; ?>" /> <input type="text" class="your-comment" placeholder="Insert your comment here..." /> <input type="button" class="small post-comment-btn" value="Post &raquo;" />
-							</div>
-							<?php } ?>
-						</div>
-						<?php
-						} // end comments check
-						?>
-					</div>
-					<?php
-				} // end posts loop
+					// render em
+					echo render_post($post, $current_user, $single_post_mode);
+				}
 			} // end posts fetch error check
 			?>
 		</div>
@@ -141,7 +99,7 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
 			<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 			<p id="file-drop-zone">Or drop files here.</p>
-			<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public?</label></p>
+			<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public? (requires peer approval)</label></p>
 			<p><label><input type="checkbox" name="anon" value="1" /> post anonymously?</label></p>
 			<p><label><input type="checkbox" name="nsfw" value="1" /> nsfw?</label></p>
 			<p><input type="submit" class="small green" value="post that shit &raquo;" /></p>
