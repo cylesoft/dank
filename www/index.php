@@ -90,13 +90,13 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 							}
 							?>
 							<?php if ($post['post_type'] == 'image' && isset($post['files'])) { ?>
-							<p><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
+							<p class="post-content"><a href="<?php echo $post['files'][0]['file_url']; ?>"><img src="<?php echo $post['files'][0]['file_url']; ?>" /></a></p>
 							<?php } ?>
 							<?php if ($post['post_type'] == 'audio' && isset($post['files'])) { ?>
-							<p><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
+							<p class="post-content"><audio controls="controls" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 audio. Use Chrome.</audio></p>
 							<?php } ?>
 							<?php if ($post['post_type'] == 'video' && isset($post['files'])) { ?>
-							<p><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
+							<p class="post-content"><video controls="controls" loop="loop" src="<?php echo $post['files'][0]['file_url']; ?>">Looks like your browser doesn't support this HTML5 video. Use Chrome.</video></p>
 							<?php } ?>
 							<?php if (isset($post['thetext'])) { ?><p><?php echo $post['thetext']; ?></p><?php } ?>
 						</div>

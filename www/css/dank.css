@@ -294,13 +294,25 @@ div.header p {
 	font-style: italic;
 }
 
-div.text-box, div.post, div.new-post { 
+div.text-box, div.new-post { 
 	padding: 0.5rem 0.75rem;
 }
 
 div.post {
+	padding: 0.5rem 0;
 	background-color: #fff;
-	border-radius: 4px;
+}
+
+div.post p {
+	padding: 0.25rem 0.75rem;
+}
+
+div.post p.post-info {
+	padding: 0 0.5rem 0 0;
+}
+
+div.post p.post-content {
+	padding: 0;
 }
 
 .post-info {
@@ -323,7 +335,6 @@ div.post {
 
 div.new-post {
 	background-color: #CFCFCF;
-	border-radius: 4px;
 }
 
 #new-post-form textarea {
@@ -343,13 +354,11 @@ div.new-post {
 div.about {
 	background-color: #838383;
 	color: #A7FFA7;
-	border-radius: 4px;
 }
 
 div.user-stuff {
 	background-color: #fff;
 	color: red;
-	border-radius: 4px;
 }
 
 div.post-wrap {
@@ -375,10 +384,6 @@ div.comment:last-child {
 
 div.new-comment-form.not-alone {
 	margin-top: 1rem;
-}
-
-div.new-comment-form input.your-comment {
-	width: 400px;
 }
 
 div.new-comment-form input.post-comment-btn {
@@ -418,40 +423,40 @@ div.new-comment-form input.post-comment-btn {
 	
 */
 
-.grid-container {
-	width: 960px;
-	margin: 0 auto;
-}
-
-div.section {
-	clear: both;
-	padding: 0;
-	margin: 0;
-	margin-left: -1em;
-}
-
-.col {
-	display: block;
-	float: left;
-	width: 100%;
-	background-clip: padding-box;
-	-moz-background-clip: padding-box;
-	-webkit-background-clip: padding-box;
-	margin: 0 0 1em 0;
-	border-left: 1em solid transparent;
-}
-
-div.group:before, div.group:after {
-	content: "";
-	display: table;
-}
-
-div.group:after {
-	clear: both;
-}
-
 @media only screen and (min-width:480px) {
 	
+	.grid-container {
+		width: 960px;
+		margin: 0 auto;
+	}
+	
+	div.section {
+		clear: both;
+		padding: 0;
+		margin: 0;
+		margin-left: -1em;
+	}
+	
+	.col {
+		display: block;
+		float: left;
+		width: 100%;
+		background-clip: padding-box;
+		-moz-background-clip: padding-box;
+		-webkit-background-clip: padding-box;
+		margin: 0 0 1em 0;
+		border-left: 1em solid transparent;
+	}
+	
+	div.group:before, div.group:after {
+		content: "";
+		display: table;
+	}
+	
+	div.group:after {
+		clear: both;
+	}
+		
 	.col { width: auto; }
 	
 	.s1 { width: 8.33%; }
@@ -477,5 +482,18 @@ div.group:after {
 	.s11 { width: 91.66%; }
 	
 	.s12 { width: 100%; }
+	
+	div.new-comment-form input.your-comment {
+		width: 400px;
+	}
+	
+	div.post {
+		border-radius: 4px;
+		padding: 0.5rem 0.75rem;
+	}
+	
+	div.about, div.user-stuff, div.new-post {
+		border-radius: 4px;
+	}
 	
 }
