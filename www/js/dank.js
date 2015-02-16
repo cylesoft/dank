@@ -188,6 +188,11 @@ function approve_btn_click(e) {
 			if (xmlhttp.status == 200) {
 				console.log('post approved');
 				e.target.setAttribute('value', 'APPROVED.');
+				e.target.parentNode.parentNode.className = e.target.parentNode.parentNode.className.replace('peer-approval', '');
+				var unneeded_stuff = e.target.parentNode.parentNode.getElementsByClassName('peer-approval');
+				for (var i = 0; i < unneeded_stuff.length; i++) {
+					unneeded_stuff[i].parentNode.removeChild(unneeded_stuff[i]);
+				}
 			} else if (xmlhttp.status == 400) {
 				console.error('There was an error 400 when trying to approve the post: ' + xmlhttp.responseText);
 			} else if (xmlhttp.status == 500) {
