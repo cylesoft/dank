@@ -434,7 +434,11 @@ div.new-comment-form.not-alone {
 
 div.new-comment-form input.post-comment-btn {
 	padding: 0.3rem 0.7rem;
-} 
+}
+
+div.new-comment-form input.your-comment {
+	width: 230px;
+}
 
 .comment-byline {
 	color: #ccc;
@@ -445,36 +449,40 @@ div.new-comment-form input.post-comment-btn {
 	
 	breakpoints
 	
-*/
-
-@media only screen and (max-width: 1100px) {
-	/* large screen */
-	
-}
-
-@media only screen and (max-width: 850px) {
-	/* medium screen */
-	
-}
-
-@media only screen and (max-width: 600px) {
-	/* small/mobile screen */
-	
-}
-
-/*
-	
-	grid work
-		generated this grid at http://flow.gs
+	grid work generated at http://flow.gs
 	
 */
 
-@media only screen and (min-width:480px) {
+@media only screen and (min-width: 960px) {
 	
 	.grid-container {
 		width: 960px;
 		margin: 0 auto;
 	}
+	
+	div.new-comment-form input.your-comment {
+		width: 400px;
+	}
+	
+}
+
+@media only screen and (max-width: 960px) and (min-width: 480px) {
+	/* in between small/mobile and big/normal */
+	
+	.grid-container {
+		width: 100%;
+		margin: 0;
+	}
+	
+	div.new-comment-form input.your-comment {
+		width: 230px;
+	}
+	
+}
+
+@media only screen and (min-width: 480px) {
+	
+	/* bigger than mobile has a grid */
 	
 	div.section {
 		clear: both;
@@ -528,10 +536,6 @@ div.new-comment-form input.post-comment-btn {
 	.s11 { width: 91.66%; }
 	
 	.s12 { width: 100%; }
-	
-	div.new-comment-form input.your-comment {
-		width: 400px;
-	}
 	
 	div.post {
 		border-radius: 4px;
