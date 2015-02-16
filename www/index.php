@@ -79,7 +79,7 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 				foreach ($posts as $post) {
 					?>
 					<div class="post-wrap">
-						<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?>">
+						<div data-post-id="<?php echo $post['post_id']; ?>" class="post <?php echo $post['post_type']; ?> <?php echo (($post['visibility'] == 6) ? 'public' : 'members-only'); ?>">
 							<!-- <?php echo print_r($post, true); ?> -->
 							<?php
 							$poster_username = ((isset($post['username']) && trim($post['username']) != '') ? '<a href="/by/'.$post['username'].'">'.$post['username'].'</a>' : 'Anonymous');
