@@ -77,7 +77,23 @@ if ($action == 'n') {
 	
 } else if ($action == 'd') {
 	
+	if (!isset($_POST['post_id']) || !is_numeric($_POST['post_id'])) {
+		header('HTTP/1.1 400 Bad Request');
+		die('no post ID given');
+	}
+	
+	$post_id = (int) $_POST['post_id'] * 1;
+	
 	// delete content
+	$delete_content_result = delete_content($post_id);
+	
+	if ($delete_content_result['ok'] == true) {
+		header('Location: /');
+	} else {
+		header('HTTP/1.1 500 Internal Server Error');
+		echo '<pre>delete_content: '.print_r($delete_content_result, true).'</pre>';
+	}
+		
 	
 } else if ($action == 'a') {
 	

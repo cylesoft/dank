@@ -287,6 +287,40 @@ function edit_content($content) {
 // deal with deleting a piece of content
 function delete_content($content_id) {
 	global $mysqli;
+	
+	$content_id = (int) $content_id * 1;
+	
+	$result = array('ok' => false, 'error' => 'unknown');
+	
+	// delete content row
+	$delete_content_row = $mysqli->query("DELETE FROM posts WHERE post_id=$content_id");
+	if (!$delete_content_row) {
+		$result = array('ok' => false, 'error' => 'database error deleting the post: '.$mysqli->error);
+	} else {
+		// delete associated comments
+		$delete_content_row = $mysqli->query("DELETE FROM comments WHERE post_id=$content_id");
+		if (!$delete_content_row) {
+			$result = array('ok' => false, 'error' => 'database error deleting the post comments: '.$mysqli->error);
+		} else {
+			// get files to delete, if any
+			$get_files = $mysqli->query("SELECT file_path FROM files WHERE post_id=$content_id");
+			while ($file_row = $get_files->fetch_assoc()) {
+				if (file_exists($file_row['file_path'])) {
+					$delete_file_result = unlink($file_row['file_path']); // trash it.
+				}
+			}
+			// delete the file rows
+			$delete_file_rows = $mysqli->query("DELETE FROM files WHERE post_id=$content_id");
+			if (!$delete_file_rows) {
+				$result = array('ok' => false, 'error' => 'database error deleting the post files: '.$mysqli->error);
+			} else {
+				$result = array('ok' => true);
+			}
+		}
+	}
+	
+	return $result;
+	
 }
 
 // get the number of currently unapproved post
@@ -412,6 +446,13 @@ function render_post($post, $current_user, $single_post_mode = false) {
 		$render .= '</div>'; // end comments div
 	} // end comments check
 	$render .= '</div>'."\n"; // end post-wrap div
+	// show tools?
+	if ($single_post_mode && $current_user['loggedin']) {
+		$render .= '<div class="post-tools">';
+		$render .= '<a href="/content/edit/'.$post['post_id'].'/" class="button blue">Edit &raquo;</a> ';
+		$render .= '<form style="display: inline;" onsubmit="return confirm(\'You sure you wanna do that?\')" action="/content/process/" method="post"><input type="hidden" name="a" value="d" /><input type="hidden" name="post_id" value="'.$post['post_id'].'" /> <input type="submit" class="button red" value="Delete &raquo;" /></form>';
+		$render .= '</div>';
+	}
 	return $render; // spit it out
 }
 
