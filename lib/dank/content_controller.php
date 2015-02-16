@@ -323,6 +323,9 @@ function render_post($post, $current_user, $single_post_mode = false) {
 	$post_classes = array();
 	$post_classes[] = 'post';
 	$post_classes[] = $post['post_type'];
+	if (isset($post['nsfw']) && $post['nsfw'] == true) {
+		$post_classes[] = 'nsfw';
+	}
 	switch ($post['visibility']) {
 		case 1:
 		case 2:
@@ -347,9 +350,13 @@ function render_post($post, $current_user, $single_post_mode = false) {
 	// switch for single post mode, show timestamp if true
 	$status_label = '';
 	if (in_array('members-only', $post_classes)) {
-		$status_label = '<span class="label members-only">Members-only</span>';
+		$status_label .= '<span class="label members-only">Members-only</span> ';
 	} else if (in_array('peer-approval', $post_classes)) {
-		$status_label = '<span class="label peer-approval">Requires approval</span>';
+		$status_label .= '<span class="label peer-approval">Requires approval</span> ';
+	}
+	if (in_array('nsfw', $post_classes)) {
+		if ($status_label == '') { $status_label .= ' '; }
+		$status_label .= '<span class="label nsfw">NSFW</span> ';
 	}
 	if ($single_post_mode) {
 		$render .= '<p class="post-info">'.$status_label.' '.$poster_username.' '.date('Y-m-d h:i A', $post['posted_ts']).'</p>';

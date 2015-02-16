@@ -320,13 +320,18 @@ span.label {
 	cursor: default;
 }
 
+span.label.nsfw {
+	color: rgb(255, 115, 115);
+}
+
 span.label.members-only {
-	
+	font-style: italic;
 }
 
 span.label.peer-approval {
 	border-color: red;
 	background-color: rgba(255, 0, 0, 0.2);
+	color: black;
 }
 
 div.post p {
