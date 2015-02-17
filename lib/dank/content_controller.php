@@ -118,7 +118,7 @@ function post_new_content($content) {
 		}
 		$file_extension = strtolower(substr(strrchr($content['php_file']['name'], "."), 1));
 		$unique_file_id = uniqid();
-		$new_file_name = 'original_'.$unique_file_id.'.'.$file_extension;
+		$new_file_name = 'dank_'.$unique_file_id.'.'.$file_extension;
 		$new_file_path = $file_path_base.$new_file_name;
 		$new_file_url = $file_url_base.$new_file_name;
 		echo '<p>'.$new_file_name.'</p>';
