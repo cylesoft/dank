@@ -35,14 +35,30 @@ function parse_text($text) {
 	//print_r($mentions_found);
 	//print_r($mention_matches);
 	$t = preg_replace_callback($link_regex, function($matches) {
-		$the_link = $matches[0];
+		$the_link = trim($matches[0]);
 		if (substr($the_link, 0, 4) != 'http') {
 			$the_link = 'http://'.$the_link;
 		}
-		return '<a href="'.$the_link.'">'.$matches[0].'</a>';
+		// check for youtube, vimeo, mp4/mov/webm, mp3, jpg/jpeg/png/gif
+		if (preg_match('/(?:youtu\.be|youtube\.com)\/(?:embed\/)?(?:watch\?v=)?([^\#\&\?\s]+)/i', $the_link, $youtube_matches)) { // if youtube
+			return '<div class="expanded-content"><iframe width="100%" height="100%" src="https://www.youtube.com/embed/'.$youtube_matches[1].'" frameborder="0" allowfullscreen></iframe></div>';
+		} else if (preg_match('/vimeo\.com\/(?:video\/)?(\d+)/i', $the_link, $vimeo_matches)) { // if vimeo
+			return '<div class="expanded-content"><iframe width="100%" height="100%" src="https://player.vimeo.com/video/'.$vimeo_matches[1].'" frameborder="0" allowfullscreen></iframe></div>';
+		} else if (preg_match('/\.(?:mp4|mov|webm)$/i', $the_link)) { // if mp4/mov/webm
+			return '<div class="expanded-content"><video controls="controls" src="'.$the_link.'"></video></div>';
+		} else if (preg_match('/\.mp3$/i', $the_link)) { // if mp3
+			return '<div class="expanded-content"><audio controls="controls" src="'.$the_link.'"></audio></div>';
+		} else if (preg_match('/\.(?:jpg|jpeg|gif|png)$/i', $the_link)) { // if jpg/jpeg/png/gif
+			return '<div class="expanded-content"><img src="'.$the_link.'" /></div>';
+		} else { // just a link
+			return '<a href="'.$the_link.'">'.$matches[0].'</a>';
+		}
 	}, $t);
 	$t = preg_replace($hashtag_regex, '<a href="/tagged/$1/">$0</a>', $t);
 	$t = preg_replace($mention_regex, '<a href="/by/$1/">$0</a>', $t);
+	if (preg_match('/"expanded-content"/i', $t)) {
+		$t .= '<div class="clear"></div>';
+	}
 	return array('text' => $t, 'links' => $link_matches[0], 'mentions' => $mention_matches[1], 'hashtags' => $hashtag_matches[1]);
 }
 

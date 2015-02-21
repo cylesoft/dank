@@ -445,6 +445,20 @@ div.new-comment-form input.your-comment {
 	font-style: italic;
 }
 
+div.expanded-content {
+	float: left;
+	margin: 0.5rem;
+}
+
+div.expanded-content iframe {
+	width: 560px;
+	height: 315px;
+}
+
+div.clear {
+	clear: both;
+}
+
 /*
 	
 	breakpoints
