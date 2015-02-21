@@ -54,6 +54,14 @@ function init_dank() {
 			approve_btns[i].addEventListener('click', approve_btn_click);
 		}
 	}
+	
+	// handle showing NSFW content anyway
+	var nsfw_show_btns = document.getElementsByClassName('nsfw-show-anyway-btn');
+	if (nsfw_show_btns != undefined && nsfw_show_btns.length > 0) {
+		for (var i = 0; i < nsfw_show_btns.length; i++) {
+			nsfw_show_btns[i].addEventListener('click', nsfw_show_click);
+		}
+	}
 }
 
 // handle incoming files
@@ -220,6 +228,20 @@ function approve_btn_click(e) {
 	xmlhttp.open("POST", "/content/process/", true);
 	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlhttp.send("a=a&post_id=" + post_id);
+}
+
+// deal with clicking on one of the "show me this NSFW anyway..." buttons
+function nsfw_show_click(e) {
+	var post_id = e.target.getAttribute('data-post-id');
+	console.log('showing nsfw post #'+post_id);
+	var post = document.getElementById('post-'+post_id);
+	// remove button
+	e.target.parentNode.removeChild(e.target);
+	// show content
+	var post_content = post.getElementsByClassName('post-content');
+	for (var i = 0; i < post_content.length; i++) {
+		post_content[i].style.display = 'block';
+	}
 }
 
 // cookie handling

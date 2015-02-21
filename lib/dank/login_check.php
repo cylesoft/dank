@@ -13,7 +13,8 @@ require_once('dbconn_mysql.php');
 $current_user = array(
 	'loggedin' => false,
 	'userid' => 0,
-	'userlevel' => 6
+	'userlevel' => 6,
+	'show_nsfw' => false,
 );
 
 $return_to = '/'; // where are they going after successful login?

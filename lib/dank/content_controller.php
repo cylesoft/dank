@@ -216,7 +216,7 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 	global $mysqli;
 	
 	$content = array(); // will hold content to return
-	
+		
 	$query_where_clause = '';
 	if (count($filter) > 0) {
 		
@@ -248,10 +248,12 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 			$query_where_list .= 'rawtext LIKE \'%#'.$mysqli->escape_string($filter['tag']).'%\'';
 		}
 		
+		/*
 		if (isset($filter['show_nsfw']) && $filter['show_nsfw'] == false) {
 			if (trim($query_where_list) != '') { $query_where_list .= ' AND '; }
 			$query_where_list .= 'nsfw=0';
 		}
+		*/
 		
 		$query_where_clause .= $query_where_list;
 		
@@ -365,7 +367,7 @@ function approve_post($post_id, $current_user) {
 // render the post bit
 function render_post($post, $current_user, $single_post_mode = false) {
 	$render = ''; // we start blank
-	$render .= '<div class="post-wrap">'; // start post-wrap
+	$render .= '<div class="post-wrap" id="post-'.$post['post_id'].'">'; // start post-wrap
 	$post_classes = array();
 	$post_classes[] = 'post';
 	$post_classes[] = $post['post_type'];
@@ -410,13 +412,20 @@ function render_post($post, $current_user, $single_post_mode = false) {
 		// permalink to this post
 		$render .= '<p class="post-info">'.$status_label.' '.$poster_username.' <a href="/content/'.$post['post_id'].'/">&raquo;</a></p>';
 	}
+	// hide nsfw content?
+	if ($current_user['show_nsfw'] == false && in_array('nsfw', $post_classes)) {
+		$nsfw_hidden_state = true;
+		$render .= '<p><input class="nsfw-show-anyway-btn" type="button" value="Show this NSFW content anyway..." data-post-id="'.$post['post_id'].'" /></p>';
+	} else { 
+		$nsfw_hidden_state = false;
+	}
 	// post content itself, whether image or audio or video
 	if ($post['post_type'] == 'image' && isset($post['files'])) {
-		$render .= '<p class="post-content"><a href="'.$post['files'][0]['file_url'].'"><img src="'.$post['files'][0]['file_url'].'" /></a></p>';
+		$render .= '<p class="post-content" '.(($nsfw_hidden_state) ? ' style="display:none"':'').'><a href="'.$post['files'][0]['file_url'].'"><img src="'.$post['files'][0]['file_url'].'" /></a></p>';
 	} else if ($post['post_type'] == 'audio' && isset($post['files'])) {
 		$render .= '<p class="post-content"><audio controls="controls" src="'.$post['files'][0]['file_url'].'">Looks like your browser doesn\'t support this HTML5 audio. Use Chrome.</audio></p>';
 	} else if ($post['post_type'] == 'video' && isset($post['files'])) {
-		$render .= '<p class="post-content"><video controls="controls" loop="loop" src="'.$post['files'][0]['file_url'].'">Looks like your browser doesn\'t support this HTML5 video. Use Chrome.</video></p>';
+		$render .= '<p class="post-content" '.(($nsfw_hidden_state) ? ' style="display:none"':'').'><video controls="controls" loop="loop" src="'.$post['files'][0]['file_url'].'">Looks like your browser doesn\'t support this HTML5 video. Use Chrome.</video></p>';
 	}
 	// show text, if any was included
 	if (isset($post['thetext']) && trim($post['thetext']) != '') {
