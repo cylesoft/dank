@@ -453,6 +453,12 @@ div.expanded-content {
 div.expanded-content iframe {
 	width: 560px;
 	height: 315px;
+	max-width: 100%;
+}
+
+div#loading-indicator {
+	font-size: 3rem;
+	font-weight: bold;
 }
 
 div.clear {

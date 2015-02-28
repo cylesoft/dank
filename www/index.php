@@ -42,6 +42,11 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 	$current_user['show_nsfw'] = true;
 }
 
+// pagination defaults
+$pagination = array();
+$pagination['num'] = 20;
+$pagination['page'] = 1;
+
 ?><!doctype html>
 <html>
 <?php echo '<!-- '.print_r($_GET, true).' -->'; ?>
@@ -77,9 +82,9 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			<?php
 		}
 		?>
-		<div class="posts">
+		<div class="posts" id="posts">
 			<?php
-			$posts = fetch_content($post_filter);
+			$posts = fetch_content($post_filter, array(), $pagination);
 			// check for an error fetching the posts
 			if (isset($posts['error'])) {
 				echo '<pre>'.$posts['error'].'</pre>';
@@ -96,6 +101,7 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 			} // end posts fetch error check
 			?>
 		</div>
+		<div id="loading-indicator" style="display: none;">LOADING MORE DANKNESS...</div>
 	</div>
 	<div class="col s4 sidebar">
 		

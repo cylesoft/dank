@@ -1,4 +1,7 @@
 var max_file_bytes;
+var current_max_page = 1;
+var has_more_content = true;
+var loading_stuff = false;
 
 window.onload = init_dank;
 
@@ -29,6 +32,15 @@ function init_dank() {
 		}
 	}
 	
+	max_scroll_limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );
+	
+	window.addEventListener('scroll', scroll_handler);
+	
+	init_post_stuff();
+}
+
+// handle all the event handlers relating to posts
+function init_post_stuff() {
 	// make videos easier to use
 	var vids = document.getElementsByTagName('video');
 	for (var i = 0; i < vids.length; i++) {
@@ -69,6 +81,20 @@ function init_dank() {
 		for (var i = 0; i < nsfw_show_btns.length; i++) {
 			nsfw_show_btns[i].addEventListener('click', nsfw_show_click);
 		}
+	}
+}
+
+// handle scrolling
+function scroll_handler(e) {
+	if (loading_stuff) {
+		return;
+	}
+	var current_scroll_length = Math.max(document.body.scrollTop, document.documentElement.scrollTop)  + window.innerHeight;
+	var max_scroll_limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );
+	//console.log('scrolling... at: ' + current_scroll_length + ', max: ' + max_scroll_limit);
+	if (current_scroll_length >= max_scroll_limit && has_more_content) {
+		console.log('scrolled to the end of the page, loading more content!');
+		load_more_content();
 	}
 }
 
@@ -294,6 +320,40 @@ function nsfw_show_click(e) {
 	for (var i = 0; i < post_content.length; i++) {
 		post_content[i].style.display = 'block';
 	}
+}
+
+// load more content, for use with infinite scrolling
+function load_more_content() {
+	console.log('loading more content...');
+	loading_stuff = true;
+	document.getElementById('loading-indicator').style.display = 'block';
+	current_max_page++; // load the next page
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				if (xmlhttp.responseText == '') {
+					document.getElementById('loading-indicator').style.display = 'none';
+					has_more_content = false;
+					return;
+				}
+				console.log('got more content, yay!');
+				document.getElementById('posts').innerHTML += xmlhttp.responseText;
+				init_post_stuff();
+				document.getElementById('loading-indicator').style.display = 'none';
+				loading_stuff = false;
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to disapprove the post: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to disapprove the post: ' + xmlhttp.responseText);
+			} else {
+				console.error('Something other than 200 was returned when disapproving the post: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/content/fetch/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("page="+current_max_page);
 }
 
 // cookie handling

@@ -275,7 +275,18 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 		
 	}
 	
-	$get_content_query = 'SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id '.$query_where_clause.' ORDER BY posted_ts DESC LIMIT 20';
+	$pagination_clause = '';
+	if (isset($pagination['num']) && is_numeric($pagination['num'])) {
+		$post_limit = round(abs($pagination['num'] * 1));
+		$pagination_clause = 'LIMIT '.$post_limit;
+		if (isset($pagination['page']) && is_numeric($pagination['page']) && $pagination['page'] * 1 > 1) {
+			$pagination_clause .= ' OFFSET '.(($pagination['page'] - 1) * $post_limit);
+		}
+	} else {
+		$pagination_clause = 'LIMIT 20';
+	}
+	
+	$get_content_query = 'SELECT posts.*, users.username FROM posts LEFT JOIN users ON users.user_id=posts.user_id '.$query_where_clause.' ORDER BY posted_ts DESC '.$pagination_clause;
 	//echo '<pre>'.$get_content_query.'</pre>';
 	$get_content = $mysqli->query($get_content_query);
 	if (!$get_content) {
