@@ -1,6 +1,6 @@
 <?php
 $header_color1 = rand(0, 360);
-$header_color2 = abs(180 - $color1);
+$header_color2 = abs(180 - $header_color1);
 $header_saturation = rand(20,80);
 $header_lightness = rand(20,60);
 $header_color1_css = 'hsl('.$header_color1.', '.$header_saturation.'%, '.$header_lightness.'%)';
