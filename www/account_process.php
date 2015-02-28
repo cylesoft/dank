@@ -45,7 +45,7 @@ if ($action == 'e') {
 	$username_db = "'".$mysqli->escape_string(trim($_POST['u']))."'";
 	$email_db = "'".$mysqli->escape_string(trim($_POST['e']))."'";
 	
-	$update_user = $mysqli->query("UPDATE users SET $password_db username=$username_db, email=$email_db WHERE user_id=".$current_user['userid']);
+	$update_user = $mysqli->query("UPDATE users SET $password_db username=$username_db, email=$email_db WHERE user_id=".$current_user['user_id']);
 	if (!$update_user) {
 		die('mysql error updating user: ' . $mysqli->error);
 	}

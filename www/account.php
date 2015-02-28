@@ -3,7 +3,7 @@
 $login_required = true;
 require_once('../lib/dank/login_check.php');
 
-$get_user_info = $mysqli->query('SELECT * FROM users WHERE user_id='.$current_user['userid']);
+$get_user_info = $mysqli->query('SELECT * FROM users WHERE user_id='.$current_user['user_id']);
 $user_info = $get_user_info->fetch_assoc();
 
 ?><!doctype html>

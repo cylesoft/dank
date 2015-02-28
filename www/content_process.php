@@ -41,7 +41,7 @@ if ($action == 'n') {
 		die('no content given');
 	}
 	
-	$the_content['user_id'] = $current_user['userid'];
+	$the_content['user_id'] = $current_user['user_id'];
 	
 	if (isset($_POST['anon']) && trim($_POST['anon']) == '1') {
 		$the_content['anonymous'] = true;

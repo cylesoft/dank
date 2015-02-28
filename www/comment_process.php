@@ -29,7 +29,7 @@ if ($action == 'n') {
 	$the_comment = array();
 	$the_comment['post_id'] = (int) $_POST['post_id'] * 1;
 	$the_comment['text'] = trim($_POST['comment']);
-	$the_comment['user_id'] = $current_user['userid'];
+	$the_comment['user_id'] = $current_user['user_id'];
 	$post_comment_result = post_new_comment($the_comment);
 	
 	if ($post_comment_result['ok'] == true) {

@@ -12,7 +12,7 @@ require_once('dbconn_mysql.php');
 // set defaults for your user cookie
 $current_user = array(
 	'loggedin' => false,
-	'userid' => 0,
+	'user_id' => 0,
 	'userlevel' => 6,
 	'show_nsfw' => false,
 );
@@ -86,7 +86,7 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 			// ok, they're cool
 			$current_user_id = $user_session_row['user_id'];
 			$current_user['loggedin'] = true;
-			$current_user['userid'] = $current_user_id;
+			$current_user['user_id'] = $current_user_id;
 			$current_user['username'] = get_username($current_user_id);
 			$current_user['userlevel'] = get_userlevel($current_user_id);
 			$new_session_key_expires = time() + (60*60*24*30);
@@ -151,9 +151,9 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 		
 		// ok, cool
 		$current_user['loggedin'] = true;
-		$current_user['userid'] = (int) $current_user_row['user_id'] * 1;
+		$current_user['user_id'] = (int) $current_user_row['user_id'] * 1;
 		$current_user['username'] = trim($current_user_row['username']);
-		$current_user_id = $current_user['userid'];
+		$current_user_id = $current_user['user_id'];
 		$current_user['userlevel'] = get_userlevel($current_user_id);
 		update_last_activity($current_user_id);
 		
