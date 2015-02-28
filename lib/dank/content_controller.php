@@ -307,37 +307,40 @@ function delete_content($content_id) {
 	global $mysqli;
 	
 	$content_id = (int) $content_id * 1;
-	
-	$result = array('ok' => false, 'error' => 'unknown');
-	
+		
 	// delete content row
 	$delete_content_row = $mysqli->query("DELETE FROM posts WHERE post_id=$content_id");
 	if (!$delete_content_row) {
-		$result = array('ok' => false, 'error' => 'database error deleting the post: '.$mysqli->error);
-	} else {
-		// delete associated comments
-		$delete_content_row = $mysqli->query("DELETE FROM comments WHERE post_id=$content_id");
-		if (!$delete_content_row) {
-			$result = array('ok' => false, 'error' => 'database error deleting the post comments: '.$mysqli->error);
-		} else {
-			// get files to delete, if any
-			$get_files = $mysqli->query("SELECT file_path FROM files WHERE post_id=$content_id");
-			while ($file_row = $get_files->fetch_assoc()) {
-				if (file_exists($file_row['file_path'])) {
-					$delete_file_result = unlink($file_row['file_path']); // trash it.
-				}
-			}
-			// delete the file rows
-			$delete_file_rows = $mysqli->query("DELETE FROM files WHERE post_id=$content_id");
-			if (!$delete_file_rows) {
-				$result = array('ok' => false, 'error' => 'database error deleting the post files: '.$mysqli->error);
-			} else {
-				$result = array('ok' => true);
-			}
+		return array('ok' => false, 'error' => 'database error deleting the post: '.$mysqli->error);
+	}
+		
+	// delete associated comments
+	$delete_content_row = $mysqli->query("DELETE FROM comments WHERE post_id=$content_id");
+	if (!$delete_content_row) {
+		return array('ok' => false, 'error' => 'database error deleting the post comments: '.$mysqli->error);
+	}
+	
+	// get files to delete, if any
+	$get_files = $mysqli->query("SELECT file_path FROM files WHERE post_id=$content_id");
+	while ($file_row = $get_files->fetch_assoc()) {
+		if (file_exists($file_row['file_path'])) {
+			$delete_file_result = unlink($file_row['file_path']); // trash it.
 		}
 	}
 	
-	return $result;
+	// delete the file rows
+	$delete_file_rows = $mysqli->query("DELETE FROM files WHERE post_id=$content_id");
+	if (!$delete_file_rows) {
+		return array('ok' => false, 'error' => 'database error deleting the post files: '.$mysqli->error);
+	}
+	
+	// delete approval votes
+	$delete_votes = $mysqli->query("DELETE FROM approval_votes WHERE post_id=$content_id");
+	if (!$delete_votes) {
+		return array('ok' => false, 'error' => 'database error deleting post approval votes: '.$mysqli->error);
+	}
+
+	return array('ok' => true);
 	
 }
 
@@ -349,6 +352,36 @@ function get_num_unapproved_posts() {
 	return $num_result['count'];
 }
 
+// get how many votes are needed to approve something
+function approval_votes_needed() {
+	global $mysqli;
+	// get number of users, divide by 4, floor it
+	$get_votes_needed = $mysqli->query("SELECT FLOOR(COUNT(user_id) / 4) AS votes_needed FROM users");
+	if ($get_votes_needed != false) {
+		$votes_needed_result = $get_votes_needed->fetch_assoc();
+		$votes_needed = $votes_needed_result['votes_needed'] * 1;
+		if ($votes_needed <= 0) {
+			$votes_needed = 1; // by default, 1
+		}
+	}
+	return $votes_needed;
+}
+
+// get how many votes are needed to disapprove something
+function disapproval_votes_needed() {
+	global $mysqli;
+	// get number of users, divide by 2, floor it
+	$get_votes_needed = $mysqli->query("SELECT FLOOR(COUNT(user_id) / 2) AS votes_needed FROM users");
+	if ($get_votes_needed != false) {
+		$votes_needed_result = $get_votes_needed->fetch_assoc();
+		$votes_needed = $votes_needed_result['votes_needed'] * 1;
+		if ($votes_needed <= 0) {
+			$votes_needed = 1; // by default, 1
+		}
+	}
+	return $votes_needed;
+}
+
 // deal with approving of a post
 function approve_post($post_id, $current_user) {
 	global $mysqli;
@@ -358,22 +391,102 @@ function approve_post($post_id, $current_user) {
 	// ensure the user approving it is not the post's author
 	$get_post = $mysqli->query("SELECT user_id, visibility FROM posts WHERE post_id=$post_id");
 	if (!$get_post) {
-		$result = array('ok' => false, 'error' => 'error with post approval fetch query: ' . $mysqli->error);
+		return array('ok' => false, 'error' => 'error with post approval fetch query: ' . $mysqli->error);
 	} else if ($get_post->num_rows != 1) {
-		$result = array('ok' => false, 'error' => 'no post found with ID '.$post_id);
+		return array('ok' => false, 'error' => 'no post found with ID '.$post_id);
 	} else {
 		$post_info = $get_post->fetch_assoc();
 		if ($post_info['visibility'] != 5) {
-			$result = array('ok' => false, 'error' => 'post is not pending approval');
-		} else if ($post_info['user_id'] == $current_user['userid']) {
-			$result = array('ok' => false, 'error' => 'you cannot approve your own post');
+			return array('ok' => false, 'error' => 'post is not pending approval');
+		} else if ($post_info['user_id'] == $current_user['user_id']) {
+			return array('ok' => false, 'error' => 'you cannot approve your own post');
 		} else {
-			// we're good, approve it
-			$approve_the_post = $mysqli->query("UPDATE posts SET visibility=6 WHERE post_id=$post_id");
-			if (!$approve_the_post) {
-				$result = array('ok' => false, 'error' => 'error with post approval update query: ' . $mysqli->error);
+			// delete any votes this user may have had
+			$delete_votes = $mysqli->query("DELETE FROM approval_votes WHERE post_id=$post_id AND user_id=".$current_user['user_id']);
+			if (!$delete_votes) {
+				return array('ok' => false, 'error' => 'error with deleting previous votes: ' . $mysqli->error);
+			}
+			
+			// add their approval vote
+			$add_vote = $mysqli->query("INSERT INTO approval_votes (post_id, user_id, thevote) VALUES ($post_id, ".$current_user['user_id'].", 1)");
+			if (!$add_vote) {
+				return array('ok' => false, 'error' => 'error with adding new approval vote: ' . $mysqli->error);
+			}
+			
+			// get current approval total
+			$get_votes = $mysqli->query("SELECT COUNT(vote_id) AS approval_votes FROM approval_votes WHERE post_id=$post_id AND thevote=1");
+			if (!$get_votes) {
+				return array('ok' => false, 'error' => 'error with fetching current approval vote count: ' . $mysqli->error);
+			}
+			$votes_result = $get_votes->fetch_assoc();
+			
+			// if approval_votes >= $approval_votes_needed, set its visibility to public
+			if ($votes_result['approval_votes'] >= approval_votes_needed()) {
+				// approved
+				$approve_the_post = $mysqli->query("UPDATE posts SET visibility=6 WHERE post_id=$post_id");
+				if (!$approve_the_post) {
+					return array('ok' => false, 'error' => 'error with post approval update query: ' . $mysqli->error);
+				} else {
+					return array('ok' => true, 'approved' => true);
+				}
 			} else {
-				$result = array('ok' => true);
+				// not enough votes yet
+				return array('ok' => true, 'approved' => false);
+			}
+		}
+	}
+}
+
+// deal with disapproving of a post
+function disapprove_post($post_id, $current_user) {
+	global $mysqli;
+	$result = array('ok' => false, 'error' => 'unknown');
+	$post_id = (int) $post_id * 1;
+	// get post, ensure it's visibility = 5 currently
+	// ensure the user disapproving it is not the post's author
+	$get_post = $mysqli->query("SELECT user_id, visibility FROM posts WHERE post_id=$post_id");
+	if (!$get_post) {
+		return array('ok' => false, 'error' => 'error with post approval fetch query: ' . $mysqli->error);
+	} else if ($get_post->num_rows != 1) {
+		return array('ok' => false, 'error' => 'no post found with ID '.$post_id);
+	} else {
+		$post_info = $get_post->fetch_assoc();
+		if ($post_info['visibility'] != 5) {
+			return array('ok' => false, 'error' => 'post is not pending approval');
+		} else if ($post_info['user_id'] == $current_user['user_id']) {
+			return array('ok' => false, 'error' => 'you cannot disapprove your own post');
+		} else {
+			// delete any votes this user may have had
+			$delete_votes = $mysqli->query("DELETE FROM approval_votes WHERE post_id=$post_id AND user_id=".$current_user['user_id']);
+			if (!$delete_votes) {
+				return array('ok' => false, 'error' => 'error with deleting previous votes: ' . $mysqli->error);
+			}
+			
+			// add their disapproval vote
+			$add_vote = $mysqli->query("INSERT INTO approval_votes (post_id, user_id, thevote) VALUES ($post_id, ".$current_user['user_id'].", -1)");
+			if (!$add_vote) {
+				return array('ok' => false, 'error' => 'error with adding new disapproval vote: ' . $mysqli->error);
+			}
+			
+			// get current approval total
+			$get_votes = $mysqli->query("SELECT COUNT(vote_id) AS disapproval_votes FROM approval_votes WHERE post_id=$post_id AND thevote=-1");
+			if (!$get_votes) {
+				return array('ok' => false, 'error' => 'error with fetching current disapproval vote count: ' . $mysqli->error);
+			}
+			$votes_result = $get_votes->fetch_assoc();
+			
+			// if disapproval_votes >= $disapproval_votes_needed, delete it entirely
+			if ($votes_result['disapproval_votes'] >= disapproval_votes_needed()) {
+				// disapproved, delete it
+				$delete_content_result = delete_content($post_id);
+				if ($delete_content_result['ok'] == true) {
+					return array('ok' => true, 'deleted' => true);
+				} else {
+					return array('ok' => false, 'error' => 'error deleting the content after disapproval: '.$delete_content_result['error']);
+				}
+			} else {
+				// not enough votes to delete it yet
+				return array('ok' => true, 'deleted' => false);
 			}
 		}
 	}

@@ -368,7 +368,7 @@ div.post p.post-content {
 	font-style: italic;
 }
 
-.button.approve-post.small {
+.button.approve-post.small, .button.disapprove-post.small {
 	padding: 0.1rem 0.3rem;
 }
 

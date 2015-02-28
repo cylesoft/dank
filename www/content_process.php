@@ -95,7 +95,7 @@ if ($action == 'n') {
 	}
 		
 	
-} else if ($action == 'a') {
+} else if ($action == 'approve') {
 	
 	// approve content
 	
@@ -109,10 +109,38 @@ if ($action == 'n') {
 	$approve_result = approve_post($post_id, $current_user);
 	
 	if ($approve_result['ok'] == true) {
-		echo 'ok';
+		if ($approve_result['approved']) {
+			echo 'approved';
+		} else {
+			echo 'ok';
+		}
 	} else {
 		header('HTTP/1.1 500 Internal Server Error');
-		echo '<pre>approve_post: '.print_r($approve_result, true).'</pre>';
+		echo 'approve_post: '.print_r($approve_result, true);
+	}
+	
+} else if ($action == 'disapprove') {
+	
+	// approve content
+	
+	if (!isset($_POST['post_id']) || !is_numeric($_POST['post_id'])) {
+		header('HTTP/1.1 400 Bad Request');
+		die('no post ID given');
+	}
+	
+	$post_id = (int) $_POST['post_id'] * 1;
+	
+	$disapprove_result = disapprove_post($post_id, $current_user);
+	
+	if ($disapprove_result['ok'] == true) {
+		if ($disapprove_result['deleted']) {
+			echo 'deleted';
+		} else {
+			echo 'ok';
+		}
+	} else {
+		header('HTTP/1.1 500 Internal Server Error');
+		echo 'disapprove_post: '.print_r($disapprove_result, true);
 	}
 	
 }

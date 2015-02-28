@@ -55,6 +55,14 @@ function init_dank() {
 		}
 	}
 	
+	// handle post disapproval
+	var disapprove_btns = document.getElementsByClassName('disapprove-post');
+	if (disapprove_btns != undefined && disapprove_btns.length > 0) {
+		for (var i = 0; i < disapprove_btns.length; i++) {
+			disapprove_btns[i].addEventListener('click', disapprove_btn_click);
+		}
+	}
+	
 	// handle showing NSFW content anyway
 	var nsfw_show_btns = document.getElementsByClassName('nsfw-show-anyway-btn');
 	if (nsfw_show_btns != undefined && nsfw_show_btns.length > 0) {
@@ -203,18 +211,26 @@ function approve_btn_click(e) {
 	//console.log(e);
 	var post_id = e.target.getAttribute('data-post-id');
 	console.log('approving post #'+post_id);
-	e.target.setAttribute('value', 'Approving...');
+	e.target.setAttribute('value', 'approving...');
 	e.target.disabled = true;
 	var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == 4) {
 			if (xmlhttp.status == 200) {
-				console.log('post approved');
-				e.target.setAttribute('value', 'APPROVED.');
-				e.target.parentNode.parentNode.className = e.target.parentNode.parentNode.className.replace('peer-approval', '');
-				var unneeded_stuff = e.target.parentNode.parentNode.getElementsByClassName('peer-approval');
-				for (var i = 0; i < unneeded_stuff.length; i++) {
-					unneeded_stuff[i].parentNode.removeChild(unneeded_stuff[i]);
+				console.log('post approval accepted');
+				if (xmlhttp.responseText == 'approved') {
+					// content totally approved
+					console.log('post is now approved');
+					e.target.setAttribute('value', 'APPROVED.');
+					e.target.parentNode.parentNode.className = e.target.parentNode.parentNode.className.replace('peer-approval', '');
+					var unneeded_stuff = e.target.parentNode.parentNode.getElementsByClassName('peer-approval');
+					for (var i = 0; i < unneeded_stuff.length; i++) {
+						unneeded_stuff[i].parentNode.removeChild(unneeded_stuff[i]);
+					}
+				} else {
+					// content still needs more votes
+					console.log('post needs more votes');
+					e.target.setAttribute('value', 'APPROVED. (Needs more votes to be public.)');
 				}
 			} else if (xmlhttp.status == 400) {
 				console.error('There was an error 400 when trying to approve the post: ' + xmlhttp.responseText);
@@ -227,7 +243,43 @@ function approve_btn_click(e) {
 	}
 	xmlhttp.open("POST", "/content/process/", true);
 	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlhttp.send("a=a&post_id=" + post_id);
+	xmlhttp.send("a=approve&post_id=" + post_id);
+}
+
+// deal with somebody clicking that disapprove button
+function disapprove_btn_click(e) {
+	//console.log(e);
+	var post_id = e.target.getAttribute('data-post-id');
+	console.log('disapproving post #'+post_id);
+	e.target.setAttribute('value', 'disapproving...');
+	e.target.disabled = true;
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				console.log('post disapproval accepted');
+				if (xmlhttp.responseText == 'deleted') {
+					// content deleted based on disapproval
+					console.log('post is now deleted');
+					var the_post = document.getElementById('post-' + post_id);
+					the_post.parentNode.removeChild(the_post);
+				} else {
+					// content still needs more votes
+					console.log('post needs more votes');
+					e.target.setAttribute('value', 'LAME. (Needs more votes to be deleted.)');
+				}
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to disapprove the post: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to disapprove the post: ' + xmlhttp.responseText);
+			} else {
+				console.error('Something other than 200 was returned when disapproving the post: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/content/process/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("a=disapprove&post_id=" + post_id);
 }
 
 // deal with clicking on one of the "show me this NSFW anyway..." buttons

@@ -72,7 +72,9 @@ if (isset($_COOKIE['hide_dank_nsfw']) && trim($_COOKIE['hide_dank_nsfw']) == '1'
 		} else if (isset($post_filter['user'])) {
 			?><h2>shit by <?php echo $post_filter['user']; ?></h2><?php
 		} else if (isset($post_filter['approval-queue'])) {
-			?><h2>shit that needs approval</h2><?php
+			?><h2>shit that needs approval</h2>
+			<p>posts need <?php echo approval_votes_needed(); ?> vote(s) for approval to be public or <?php echo disapproval_votes_needed(); ?> vote(s) for deletion; based on number of users.</p>
+			<?php
 		}
 		?>
 		<div class="posts">
