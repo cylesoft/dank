@@ -474,7 +474,9 @@ function render_post($post, $current_user, $single_post_mode = false) {
 	// show tools?
 	if ($single_post_mode && $current_user['loggedin']) {
 		$render .= '<div class="post-tools">';
-		$render .= '<a href="/content/edit/'.$post['post_id'].'/" class="button blue">Edit &raquo;</a> ';
+		if ($current_user['user_id'] == $post['user_id']) {
+			$render .= '<a href="/content/edit/'.$post['post_id'].'/" class="button blue">Edit &raquo;</a> ';
+		}
 		$render .= '<form style="display: inline;" onsubmit="return confirm(\'You sure you wanna do that?\')" action="/content/process/" method="post"><input type="hidden" name="a" value="d" /><input type="hidden" name="post_id" value="'.$post['post_id'].'" /> <input type="submit" class="button red" value="Delete &raquo;" /></form>';
 		$render .= '</div>';
 	}
