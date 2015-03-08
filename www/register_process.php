@@ -22,6 +22,10 @@ if (strlen(trim($_POST['u'])) > 50) {
 	die('your username is too damn long');
 }
 
+if (preg_match('/^[-_~!$a-zA-Z0-9]+$/i', trim($_POST['u'])) == false) {
+	die('your username is invalid, please stick to alphanumeric characters');
+}
+
 if (!isset($_POST['p1']) || trim($_POST['p1']) == '') {
 	die('you forgot to put in your password, jeez.');
 }
