@@ -103,7 +103,6 @@ if ($action == 'n') {
 		echo '<pre>delete_content: '.print_r($delete_content_result, true).'</pre>';
 	}
 		
-	
 } else if ($action == 'approve') {
 	
 	// approve content

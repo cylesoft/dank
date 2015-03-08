@@ -583,7 +583,7 @@ function render_post($post, $current_user, $single_post_mode = false) {
 		// list actual comments
 		$render .= '<div class="comments-list" data-post-id="'.$post['post_id'].'">';
 		foreach ($comments as $comment) {
-			$render .= render_comment($comment); // render each comment bit
+			$render .= render_comment($comment, $current_user); // render each comment bit
 		}
 		$render .= '</div>'; // end comments list div
 		// if logged in, allow new comments
@@ -620,7 +620,7 @@ function fetch_comments_for_post($post_id) {
 	global $mysqli;
 	$post_id = (int) $post_id * 1;
 	$comments = array(); // will hold comments to be given back
-	$get_comments = $mysqli->query('SELECT comments.comment_id, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE post_id='.$post_id.' ORDER BY comment_id ASC');
+	$get_comments = $mysqli->query('SELECT comments.comment_id, comments.user_id, comments.rawcomment, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE post_id='.$post_id.' ORDER BY comment_id ASC');
 	if ($get_comments->num_rows > 0) {
 		while ($comment = $get_comments->fetch_assoc()) {
 			$comments[] = $comment;
@@ -634,7 +634,7 @@ function fetch_comment($comment_id) {
 	global $mysqli;
 	$comment_id = (int) $comment_id * 1;
 	$comment = array(); // will hold comment to be given back
-	$get_comment = $mysqli->query('SELECT comments.comment_id, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE comment_id='.$comment_id);
+	$get_comment = $mysqli->query('SELECT comments.comment_id, comments.user_id, comments.rawcomment, comments.thecomment, comments.posted_ts, comments.updated_ts, users.username FROM comments LEFT JOIN users ON users.user_id=comments.user_id WHERE comment_id='.$comment_id);
 	if ($get_comment->num_rows == 1) {
 		$comment = $get_comment->fetch_assoc();
 	}
@@ -676,7 +676,7 @@ function post_new_comment($comment) {
 	// insert into database
 	$insert_comment_into_db = $mysqli->query("INSERT INTO comments (post_id, user_id, thecomment, rawcomment, posted_ts, updated_ts) VALUES ($post_id_db, $user_id_db, $thetext_db, $rawtext_db, $now_db, $now_db)");
 	if (!$insert_comment_into_db) {
-		$return_result = array('ok' => false, 'error' => 'mysql error on new post: '.$mysqli->error);
+		$return_result = array('ok' => false, 'error' => 'mysql error on new comment: '.$mysqli->error);
 	} else {
 		$new_comment_id = $mysqli->insert_id;
 		$return_result = array( 'ok' => true, 'id' => $new_comment_id );
@@ -686,11 +686,74 @@ function post_new_comment($comment) {
 	return $return_result;
 }
 
+// deal with deleting a comment
+function delete_comment($comment_id) {
+	global $mysqli;
+	
+	$comment_id = (int) $comment_id * 1;
+	
+	// delete comment
+	$delete_comment = $mysqli->query("DELETE FROM comments WHERE comment_id=$comment_id");
+	if (!$delete_comment) {
+		return array('ok' => false, 'error' => 'database error deleting the comment: '.$mysqli->error);
+	}
+	
+	return array('ok' => true);
+	
+}
+
+// deal with editing a comment
+function edit_comment($comment) {
+	// expecting $comment['comment_id'], $comment['text']
+	
+	global $mysqli;
+	
+	$comment_id = (int) $comment['comment_id'];
+	
+	$rawtext_db = "'".$mysqli->escape_string($comment['text'])."'";
+	
+	// inspect the incoming text for
+	// links (also: youtube, vimeo, jpg/gif/png?)
+	// tags (#whatever)
+	// user mentions (@whoever)
+	// and transform them accordingly
+	
+	$reformatted_result = parse_text($comment['text']);
+	
+	// use the ['links'] and ['mentions'] and ['hashtags'] keys for anything...?
+	// check to see if the @mentioned user(s) even exist?
+	// notify user(s) of their mention(s)? index them?
+	// index the hashtag reference(s) somewhere?
+	// check the links to see if they're images/audio/video?
+	
+	$reformatted_text = $reformatted_result['text'];
+	
+	$thetext_db = "'".$mysqli->escape_string($reformatted_text)."'";
+	
+	$now_db = time();
+	
+	// update database
+	$update_comment = $mysqli->query("UPDATE comments SET thecomment=$thetext_db, rawcomment=$rawtext_db, updated_ts=$now_db WHERE comment_id=$comment_id");
+	if (!$update_comment) {
+		$return_result = array('ok' => false, 'error' => 'mysql error on edit comment update: '.$mysqli->error);
+	} else {
+		$return_result = array( 'ok' => true );
+	}
+	
+	// send back array( 'ok' => true/false, 'error' => 'if needed' );
+	return $return_result;
+}
+
 // render the comment bit
-function render_comment($comment) {
-	// expecting: $comment['thecomment'], $comment['username'], $comment['posted_ts'], $comment['updated_ts']
+function render_comment($comment, $current_user) {
 	$render = '';
-	$render .= '<div class="comment">';
+	if ($current_user['user_id'] == $comment['user_id']) {
+		$render .= '<div class="comment" id="comment-'.$comment['comment_id'].'">';
+		$render .= '<div style="display:none;" id="edit-comment-'.$comment['comment_id'].'"><input type="text" id="edited-comment-'.$comment['comment_id'].'" class="your-comment" value="'.$comment['rawcomment'].'" /> <input id="save-edited-comment-'.$comment['comment_id'].'" data-comment-id="'.$comment['comment_id'].'" type="button" class="small save-comment-btn" value="save" /></div>';
+		$render .= '<div class="comment-utils"><input class="tiny button edit-comment" data-comment-id="'.$comment['comment_id'].'" type="button" value="edit" /> <input class="tiny button delete-comment" data-comment-id="'.$comment['comment_id'].'" type="button" value="delete" /></div>';
+	} else {
+		$render .= '<div class="comment" id="comment-'.$comment['comment_id'].'">';
+	}
 	$render .= '<p>'.$comment['thecomment'].'</p>';
 	$render .= '<p class="comment-byline">'.$comment['username'].' '.date('m/d/Y h:i a', $comment['posted_ts']).'</p>';
 	$render .= '</div>'."\n";

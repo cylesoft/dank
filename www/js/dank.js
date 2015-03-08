@@ -37,6 +37,7 @@ function init_dank() {
 	window.addEventListener('scroll', scroll_handler);
 	
 	init_post_stuff();
+	init_comment_stuff();
 }
 
 // handle all the event handlers relating to posts
@@ -80,6 +81,25 @@ function init_post_stuff() {
 	if (nsfw_show_btns != undefined && nsfw_show_btns.length > 0) {
 		for (var i = 0; i < nsfw_show_btns.length; i++) {
 			nsfw_show_btns[i].addEventListener('click', nsfw_show_click);
+		}
+	}
+	
+}
+
+function init_comment_stuff() {
+	// handle comment edit buttons
+	var comment_edit_btns = document.getElementsByClassName('edit-comment');
+	if (comment_edit_btns != undefined && comment_edit_btns.length > 0) {
+		for (var i = 0; i < comment_edit_btns.length; i++) {
+			comment_edit_btns[i].addEventListener('click', comment_edit_click);
+		}
+	}
+	
+	// handle comment delete buttons
+	var comment_delete_btns = document.getElementsByClassName('delete-comment');
+	if (comment_delete_btns != undefined && comment_delete_btns.length > 0) {
+		for (var i = 0; i < comment_delete_btns.length; i++) {
+			comment_delete_btns[i].addEventListener('click', comment_delete_click);
 		}
 	}
 }
@@ -320,6 +340,84 @@ function nsfw_show_click(e) {
 	for (var i = 0; i < post_content.length; i++) {
 		post_content[i].style.display = 'block';
 	}
+}
+
+// deal with clicking on one of the edit comment buttons
+function comment_edit_click(e) {
+	var comment_id = e.target.getAttribute('data-comment-id');
+	console.log('editing comment ID #'+comment_id);
+	var comment = document.getElementById('comment-' + comment_id);
+	var edit_comment_form = document.getElementById('edit-comment-'+comment_id);
+	//console.log(comment);
+	//comment.parentNode.removeChild(comment);
+	//comment.style.display = 'none';
+	edit_comment_form.style.display = 'block';
+	comment.parentNode.replaceChild(edit_comment_form, comment);
+	document.getElementById('save-edited-comment-'+comment_id).addEventListener('click', comment_edit_save_click);
+}
+
+// deal with saving the edited comment
+function comment_edit_save_click(e) {
+	var comment_id = e.target.getAttribute('data-comment-id');
+	console.log('saving edit to comment ID #'+comment_id);
+	var new_comment_text = document.getElementById('edited-comment-'+comment_id).value;
+	//console.log('new comment: ' + new_comment_text);
+	//var comment = document.getElementById('comment-' + comment_id);
+	var edit_comment_form = document.getElementById('edit-comment-'+comment_id);
+	//edit_comment_form.parentNode.removeChild(edit_comment_form);
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				console.log('comment edit saved');
+				var dummy = document.createElement('div');
+				dummy.innerHTML = xmlhttp.responseText;
+				edit_comment_form.parentNode.replaceChild(dummy.firstChild, edit_comment_form);
+				init_comment_stuff();
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to post the comment: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to post the comment: ' + xmlhttp.responseText);
+			} else {
+				console.error('Something else other than 200 was returned when posting the comment: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/comment/process/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("a=e&comment_id=" + comment_id + "&comment=" + encodeURIComponent(new_comment_text));
+}
+
+// deal with clicking on one of the delete comment buttons
+function comment_delete_click(e) {
+	if (confirm('Are you sure?') == false) {
+		return;
+	}
+	var comment_id = e.target.getAttribute('data-comment-id');
+	console.log('deleting comment ID #'+comment_id);
+	var comment = document.getElementById('comment-' + comment_id);
+	var edit_comment_form = document.getElementById('edit-comment-'+comment_id);
+	e.target.setAttribute('value', 'deleting...');
+	e.target.disabled = true;
+	var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4) {
+			if (xmlhttp.status == 200) {
+				console.log('comment deletion accepted');
+				comment.parentNode.removeChild(comment);
+				edit_comment_form.parentNode.removeChild(edit_comment_form);
+			} else if (xmlhttp.status == 400) {
+				console.error('There was an error 400 when trying to delete the comment: ' + xmlhttp.responseText);
+			} else if (xmlhttp.status == 500) {
+				console.error('There was an error 500 when trying to delete the comment: ' + xmlhttp.responseText);
+			} else {
+				console.error('Something other than 200 was returned when deleting the comment: ' + xmlhttp.responseText);
+			}
+		}
+	}
+	xmlhttp.open("POST", "/comment/process/", true);
+	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlhttp.send("a=d&comment_id=" + comment_id);
 }
 
 // load more content, for use with infinite scrolling

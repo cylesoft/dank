@@ -202,6 +202,11 @@ table td {
 	background-color: #38ba1e;
 }
 
+.button.tiny, input[type="submit"].tiny, input[type="button"].tiny {
+	font-size: 0.6rem;
+	padding: 0.2rem;
+}
+
 .button.small, input[type="submit"].small, input[type="button"].small {
 	font-size: 0.8rem;
 	padding: 0.6rem;
@@ -432,11 +437,11 @@ div.new-comment-form.not-alone {
 	margin-top: 1rem;
 }
 
-div.new-comment-form input.post-comment-btn {
+.comments input.post-comment-btn, .comments input.save-comment-btn {
 	padding: 0.3rem 0.7rem;
 }
 
-div.new-comment-form input.your-comment {
+input.your-comment {
 	width: 230px;
 }
 
@@ -461,6 +466,11 @@ div#loading-indicator {
 	font-weight: bold;
 }
 
+div.comment-utils {
+	float: right;
+	opacity: 0.5;
+}
+
 div.clear {
 	clear: both;
 }
@@ -480,7 +490,7 @@ div.clear {
 		margin: 0 auto;
 	}
 	
-	div.new-comment-form input.your-comment {
+	input.your-comment {
 		width: 400px;
 	}
 	
