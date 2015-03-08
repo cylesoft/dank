@@ -24,7 +24,7 @@ function parse_text($text) {
 	$link_regex = '/\b(https?:\/\/)?(\S+)\.(\S+)\b/i';
 	$hashtag_regex = '/\#(\S+)/i';
 	$mention_regex = '/\@(\S+)/i';
-	$t = $text;
+	$t = strip_tags($text);
 	$links_found = preg_match_all($link_regex, $t, $link_matches);
 	//print_r($links_found);
 	//print_r($link_matches);
@@ -326,8 +326,8 @@ function delete_content($content_id) {
 	}
 		
 	// delete associated comments
-	$delete_content_row = $mysqli->query("DELETE FROM comments WHERE post_id=$content_id");
-	if (!$delete_content_row) {
+	$delete_comments = $mysqli->query("DELETE FROM comments WHERE post_id=$content_id");
+	if (!$delete_comments) {
 		return array('ok' => false, 'error' => 'database error deleting the post comments: '.$mysqli->error);
 	}
 	

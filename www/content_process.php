@@ -83,6 +83,15 @@ if ($action == 'n') {
 	}
 	
 	$post_id = (int) $_POST['post_id'] * 1;
+		
+	// verify this person owns the content.......
+	
+	$content = fetch_content( array('post_id' => $post_id) );
+	
+	if ($content['user_id'] != $current_user['user_id']) {
+		header('HTTP/1.1 400 Bad Request');
+		die('you do not own this content');
+	}
 	
 	// delete content
 	$delete_content_result = delete_content($post_id);
