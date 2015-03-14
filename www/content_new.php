@@ -18,7 +18,7 @@ require_once('../lib/dank/login_check.php');
 		<input type="hidden" name="a" value="n" />
 		<input type="hidden" id="max-file-bytes" value="20000000" />
 		<p id="file-list"></p>
-		<p>Basic Markdown supported in the text area (bold, italics, headers, lists, code). Links, #hashtags, @mentions will be auto-parsed.</p>
+		<p><a href="http://packetlife.net/media/library/16/Markdown.pdf" target="_blank">Basic Markdown</a> supported in the text area (bold, italics, headers, lists, code). Links, #hashtags, @mentions will be auto-parsed.</p>
 		<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
 		<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 		<p id="file-drop-zone">Or drop files here.</p>

@@ -121,7 +121,7 @@ $pagination['page'] = 1;
 			<input type="hidden" name="a" value="n" />
 			<input type="hidden" id="max-file-bytes" value="20000000" />
 			<p id="file-list"></p>
-			<p><textarea name="content" placeholder="post some new shit here"></textarea></p>
+			<p><textarea name="content" placeholder="post some new shit here, basic markdown accepted"></textarea></p>
 			<p><input type="file" name="file" id="files" /> Max size: <?php echo ini_get('upload_max_filesize'); ?>, accepts: jpg, gif, png, mp3, mp4, webm.</p>
 			<p id="file-drop-zone">Or drop files here.</p>
 			<p><label><input type="checkbox" name="public" value="1" checked="checked" /> make post public? (requires peer approval)</label></p>

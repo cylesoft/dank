@@ -18,11 +18,13 @@ $file_path_base = '/var/www/domains/dankest.website/www/files/'; // where to sto
 $file_url_base = '/files/';
 
 require_once('dbconn_mysql.php');
+require_once('/var/www/domains/dankest.website/lib/Michelf/Markdown.inc.php');
+use \Michelf\Markdown;
 
 // parse text to link-ify links, #hashtags, and @mentions
 function parse_text($text) {
 	$link_regex = '/\b(https?:\/\/)?(\S+)\.(\S+)\b/i';
-	$hashtag_regex = '/\#(\S+)/i';
+	$hashtag_regex = '/\#([^\s\#]+)/i';
 	$mention_regex = '/\@(\S+)/i';
 	$t = strip_tags($text);
 	$links_found = preg_match_all($link_regex, $t, $link_matches);
@@ -59,6 +61,7 @@ function parse_text($text) {
 	if (preg_match('/"expanded-content"/i', $t)) {
 		$t .= '<div class="clear"></div>';
 	}
+	$t = Markdown::defaultTransform($t);
 	return array('text' => $t, 'links' => $link_matches[0], 'mentions' => $mention_matches[1], 'hashtags' => $hashtag_matches[1]);
 }
 
