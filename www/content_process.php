@@ -88,7 +88,7 @@ if ($action == 'n') {
 	
 	$content = fetch_content( array('post_id' => $post_id) );
 	
-	if ($content['user_id'] != $current_user['user_id']) {
+	if ($content[0]['user_id'] != $current_user['user_id']) {
 		header('HTTP/1.1 400 Bad Request');
 		die('you do not own this content');
 	}
