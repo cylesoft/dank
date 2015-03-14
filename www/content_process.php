@@ -75,6 +75,67 @@ if ($action == 'n') {
 	
 	// edit content
 	
+	if (!isset($_POST['post_id']) || !is_numeric($_POST['post_id'])) {
+		header('HTTP/1.1 400 Bad Request');
+		die('no post ID given');
+	}
+	
+	$post_id = (int) $_POST['post_id'] * 1;
+	
+	$the_content = array();
+	$the_content['post_id'] = $post_id;
+	
+	$found_content = false; // right now we'll assume there's no content to post
+	
+	// is there text content?
+	if (isset($_POST['content']) && trim($_POST['content']) != '') {
+		$found_content = true;
+		$the_content['text'] = trim($_POST['content']);
+	}
+	
+	// is there a file?
+	if (isset($_FILES['file']) && isset($_FILES['file']['error']) && $_FILES['file']['error'] == 0) {
+		$found_content = true;
+		$the_content['php_file'] = $_FILES['file'];
+	} else {
+		// handle file upload error?
+	}
+	
+	// did we find something to post or not?
+	if ($found_content == false) {
+		die('no content given');
+	}
+	
+	$the_content['user_id'] = $current_user['user_id'];
+	
+	if (isset($_POST['anon']) && trim($_POST['anon']) == '1') {
+		$the_content['anonymous'] = true;
+	} else {
+		$the_content['anonymous'] = false;
+	}
+	
+	if (isset($_POST['nsfw']) && trim($_POST['nsfw']) == '1') {
+		$the_content['nsfw'] = true;
+	} else {
+		$the_content['nsfw'] = false;
+	}
+	
+	if (isset($_POST['public']) && trim($_POST['public']) == '1') {
+		$the_content['visibility'] = 5; // requires peer approval for public
+	} else {
+		$the_content['visibility'] = 3; // members only
+	}
+	
+	$edit_result = edit_content($the_content);
+	
+	//echo '<pre>edit_content: '.print_r($edit_result, true).'</pre>';
+	
+	if ($edit_result['ok'] == true) {
+		header('Location: /content/'.$post_id.'/');
+	} else {
+		echo '<pre>edit_content: '.print_r($edit_result, true).'</pre>';
+	}
+	
 } else if ($action == 'd') {
 	
 	if (!isset($_POST['post_id']) || !is_numeric($_POST['post_id'])) {

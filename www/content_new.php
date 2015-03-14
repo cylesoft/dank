@@ -14,7 +14,7 @@ require_once('../lib/dank/login_check.php');
 
 <div class="section group">
 	<div class="col s12">
-		<form id="new-post-form" class="full-page-new-post-form" enctype="multipart/form-data" action="/content/process/" method="post">
+		<form id="new-post-form" class="full-page-post-form" enctype="multipart/form-data" action="/content/process/" method="post">
 		<input type="hidden" name="a" value="n" />
 		<input type="hidden" id="max-file-bytes" value="20000000" />
 		<p id="file-list"></p>

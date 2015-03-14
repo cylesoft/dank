@@ -140,9 +140,9 @@ function post_new_content($content) {
 		$new_file_name = 'dank_'.$unique_file_id.'.'.$file_extension;
 		$new_file_path = $file_path_base.$new_file_name;
 		$new_file_url = $file_url_base.$new_file_name;
-		echo '<p>'.$new_file_name.'</p>';
-		echo '<p>'.$new_file_path.'</p>';
-		echo '<p>'.$new_file_url.'</p>';
+		//echo '<p>'.$new_file_name.'</p>';
+		//echo '<p>'.$new_file_path.'</p>';
+		//echo '<p>'.$new_file_url.'</p>';
 		if (move_uploaded_file($content['php_file']['tmp_name'], $new_file_path)) {
 			$new_file_info = array();
 			$new_file_info['uniqid'] = $unique_file_id;
@@ -313,7 +313,183 @@ function fetch_content($filter = array(), $order = array(), $pagination = array(
 
 // deal with editing a piece of content
 function edit_content($content) {
-	global $mysqli;
+	
+	// same as post_new_content, except expect $content['post_id']
+	
+	global $mysqli, $file_path_base, $file_url_base;
+	
+	if (!isset($content['post_id']) || !is_numeric($content['post_id']) || $content['post_id'] == 0) {
+		return array('ok' => false, 'error' => 'no content ID given, dunno what to update');
+	}
+	
+	$post_id_db = (int) $content['post_id'] * 1;
+	
+	if (!isset($content['type'])) {
+		$content['type'] = 'unknown';
+	}
+	
+	if (isset($content['text'])) {
+		
+		$content['type'] = 'text';
+		
+		$rawtext_db = "'".$mysqli->escape_string($content['text'])."'";
+		
+		// inspect the incoming text for
+		// links (also: youtube, vimeo, jpg/gif/png?)
+		// tags (#whatever)
+		// user mentions (@whoever)
+		// and transform them accordingly
+		
+		$reformatted_result = parse_text($content['text']);
+		
+		// use the ['links'] and ['mentions'] and ['hashtags'] keys for anything...?
+		// check to see if the @mentioned user(s) even exist?
+		// notify user(s) of their mention(s)? index them?
+		// index the hashtag reference(s) somewhere?
+		// check the links to see if they're images/audio/video?
+		
+		$reformatted_text = $reformatted_result['text'];
+		
+		$thetext_db = "'".$mysqli->escape_string($reformatted_text)."'";
+		
+	} else {
+		$rawtext_db = 'null';
+		$thetext_db = 'null';
+	}
+	
+	if (isset($content['php_file'])) {
+		// handle incoming php file
+		/*
+			[name] => celery.gif
+            [type] => image/gif
+            [tmp_name] => /tmp/phptwtsMN
+            [error] => 0
+            [size] => 543317
+		*/
+		switch ($content['php_file']['type']) {
+			case 'image/gif':
+			case 'image/png':
+			case 'image/jpeg':
+			$content['type'] = 'image';
+			break;
+			case 'video/mp4':
+			case 'video/webm':
+			$content['type'] = 'video';
+			break;
+			case 'audio/mp3':
+			$content['type'] = 'audio';
+			break;
+			default:
+			unlink($content['php_file']['tmp_name']);
+			return array('ok' => false, 'error' => 'you uploaded an unsupported file type');
+		}
+		$file_extension = strtolower(substr(strrchr($content['php_file']['name'], "."), 1));
+		$unique_file_id = uniqid();
+		$new_file_name = 'dank_'.$unique_file_id.'.'.$file_extension;
+		$new_file_path = $file_path_base.$new_file_name;
+		$new_file_url = $file_url_base.$new_file_name;
+		//echo '<p>'.$new_file_name.'</p>';
+		//echo '<p>'.$new_file_path.'</p>';
+		//echo '<p>'.$new_file_url.'</p>';
+		if (move_uploaded_file($content['php_file']['tmp_name'], $new_file_path)) {
+			$new_file_info = array();
+			$new_file_info['uniqid'] = $unique_file_id;
+			$new_file_info['path'] = $new_file_path;
+			$new_file_info['url'] = $new_file_url;
+			if ($content['type'] == 'image') {
+				$new_file_dimensions = getimagesize($new_file_path);
+				$new_file_info['width'] = $new_file_dimensions[0];
+				$new_file_info['height'] = $new_file_dimensions[1];
+			} else if ($content['type'] == 'audio' || $content['type'] == 'video') {
+				/*
+				
+					add some kind of ffmpeg hook here to get duration?
+				
+				*/
+				$new_file_info['duration'] = 0;
+			}
+			
+			// get files to delete, if any
+			$get_files = $mysqli->query("SELECT file_path FROM files WHERE post_id=$post_id_db");
+			while ($file_row = $get_files->fetch_assoc()) {
+				if (file_exists($file_row['file_path'])) {
+					$delete_file_result = unlink($file_row['file_path']); // trash it.
+				}
+			}
+			
+			// delete the file rows
+			$delete_file_rows = $mysqli->query("DELETE FROM files WHERE post_id=$post_id_db");
+			if (!$delete_file_rows) {
+				return array('ok' => false, 'error' => 'database error deleting the old post files: '.$mysqli->error);
+			}
+			
+		} else {
+			// handle error moving the file around
+			return array('ok' => false, 'error' => 'there was an error moving the uploaded file');
+		}
+	}
+	
+	if (isset($content['user_id']) && is_numeric($content['user_id'])) {
+		$user_id_db = (int) $content['user_id'] * 1;
+	} else {
+		$user_id_db = 'null';
+	}
+	
+	if (isset($content['anonymous']) && $content['anonymous'] == true) {
+		$user_id_db = 'null';
+	}
+	
+	if (isset($content['nsfw']) && $content['nsfw'] == true) {
+		$nsfw_db = 1;
+	} else {
+		$nsfw_db = 0;
+	}
+	
+	if (isset($content['visibility']) && is_numeric($content['visibility'])) {
+		$visibility_db = (int) $content['visibility'] * 1;
+	} else {
+		$visibility_db = 6;
+	}
+	
+	$post_type_db = "'".$mysqli->escape_string($content['type'])."'";
+	$now_db = time();
+	
+	// update in database
+	$update_post_in_db = $mysqli->query("UPDATE posts SET post_type=$post_type_db, user_id=$user_id_db, visibility=$visibility_db, thetext=$thetext_db, rawtext=$rawtext_db, nsfw=$nsfw_db, updated_ts=$now_db WHERE post_id=$post_id_db");
+	if (!$update_post_in_db) {
+		$return_result = array('ok' => false, 'error' => 'mysql error on new post: '.$mysqli->error);
+	} else {
+		$return_result = array('ok' => true, 'id' => $post_id_db); // so far so good
+		// ok deal with file row if there is one to be made
+		if (isset($new_file_info) && is_array($new_file_info) && count($new_file_info) > 0) {
+			$new_file_uniqid_db = "'".$mysqli->escape_string($new_file_info['uniqid'])."'";
+			$new_file_path_db = "'".$mysqli->escape_string($new_file_info['path'])."'";
+			$new_file_url_db = "'".$mysqli->escape_string($new_file_info['url'])."'";
+			if (isset($new_file_info['width']) && is_numeric($new_file_info['width'])) {
+				$new_file_image_width = (int) $new_file_info['width'] * 1;
+			} else {
+				$new_file_image_width = 'null';
+			}
+			if (isset($new_file_info['height']) && is_numeric($new_file_info['height'])) {
+				$new_file_image_height = (int) $new_file_info['height'] * 1;
+			} else {
+				$new_file_image_height = 'null';
+			}
+			if (isset($new_file_info['duration']) && is_numeric($new_file_info['duration'])) {
+				$new_file_duration = (int) $new_file_info['duration'] * 1;
+			} else {
+				$new_file_duration = 'null';
+			}
+			$insert_file_into_db = $mysqli->query("INSERT INTO files (file_uniqid, post_id, file_path, file_url, image_width, image_height, duration) VALUES ($new_file_uniqid_db, $post_id_db, $new_file_path_db, $new_file_url_db, $new_file_image_width, $new_file_image_height, $new_file_duration)");
+			if (!$insert_file_into_db) {
+				$return_result = array('ok' => false, 'error' => 'mysql error on file row: '.$mysqli->error);
+			}
+		}
+	}
+	
+	// return array
+	return $return_result;
+	
 }
 
 // deal with deleting a piece of content
