@@ -49,8 +49,8 @@ $pagination['page'] = 1;
 
 ?><!doctype html>
 <html>
-<?php echo '<!-- '.print_r($_GET, true).' -->'; ?>
-<?php echo '<!-- '.print_r($post_filter, true).' -->'; ?>
+<?php //echo '<!-- '.print_r($_GET, true).' -->'; ?>
+<?php //echo '<!-- '.print_r($post_filter, true).' -->'; ?>
 <!--
       _             _                                  
      | |           | |                                 
@@ -164,6 +164,10 @@ $pagination['page'] = 1;
 		
 		<div class="text-box">
 			<p><form id="hide-nsfw-form" action="./" method="post"><label>Hide NSFW content? <input type="checkbox" value="1" name="hide_nsfw" id="nsfw-hide-toggle" <?php echo (($current_user['show_nsfw']) ? '': 'checked="checked"'); ?> /></label></form></p>
+		</div>
+		
+		<div class="text-box">
+			<p><a href="/rss/">dank rss feed</a></p>
 		</div>
 		
 	</div>

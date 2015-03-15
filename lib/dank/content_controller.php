@@ -56,8 +56,8 @@ function parse_text($text) {
 			return '<a href="'.$the_link.'">'.$matches[0].'</a>';
 		}
 	}, $t);
-	$t = preg_replace($hashtag_regex, '<a href="/tagged/$1/">$0</a>', $t);
-	$t = preg_replace($mention_regex, '<a href="/by/$1/">$0</a>', $t);
+	$t = preg_replace($hashtag_regex, '<a href="https://dankest.website/tagged/$1/">$0</a>', $t);
+	$t = preg_replace($mention_regex, '<a href="https://dankest.website/by/$1/">$0</a>', $t);
 	if (preg_match('/"expanded-content"/i', $t)) {
 		$t .= '<div class="clear"></div>';
 	}
