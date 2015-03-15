@@ -8,31 +8,24 @@ require_once('../../lib/dank/login_check.php');
 ?><!doctype html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>dankmeme</title>
-<link href="//fonts.googleapis.com/css?family=Lato:300italic,700italic|Open+Sans:400italic,700italic,400,700" rel="stylesheet" type="text/css" />
-<link href="/css/dank.css" rel="stylesheet" type="text/css" />
+<?php require_once('../../lib/dank/templates/head.php'); ?>
 </head>
 <body>
 <div class="grid-container">
+<?php require_once('../../lib/dank/templates/header.php'); ?>
 
 <div class="section group">
 	<div class="col s12">
-		<h1>dankmeme</h1>
-	</div>
-</div>
-
-<div class="section group">
-	<div class="col s12">
-		<!-- posts -->
 		<p>admin</p>
-		<pre><?php print_r($current_user); ?></pre>
+		<ul>
+			<li><a href="invite_codes.php">invite codes</a></li>
+		</ul>
+		
+		<!-- <?php print_r($current_user); ?> -->
 	</div>
 </div>
 
 </div>
-
-<script src="/js/dank.js" type="text/javascript"></script>
+<?php require_once('../../lib/dank/templates/foot.php'); ?>
 </body>
 </html>

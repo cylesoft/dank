@@ -55,14 +55,18 @@ if ($check_for_username->num_rows > 0) {
 	die('sorry, but that username appears to already be in use.');
 }
 
-// check to make sure their invite code matches
-$new_invite_code_db = "'".$mysqli->escape_string(trim($_POST['i']))."'";
-$check_invite = $mysqli->query("SELECT code_id FROM invite_codes WHERE theemail=$new_user_email_db AND thecode=$new_invite_code_db AND beenused=0");
-if ($check_invite->num_rows == 0) {
-	die('invalid invite code, brah');
+// get their invite info
+$get_invite_code = $mysqli->query("SELECT * FROM invite_codes WHERE theemail=$new_user_email_db AND beenused=0");
+if ($get_invite_code->num_rows == 0) {
+	die('sorry, but there is no invite code for you, or it was already used');
 }
 
-$invite_row = $check_invite->fetch_assoc();
+$invite_row = $get_invite_code->fetch_assoc();
+
+// compare their invite code with the hash
+if (password_verify(trim($_POST['i']), $invite_row['thecode']) == false) {
+	die('invalid invite code, brah');
+}
 
 // ok, make a new user
 

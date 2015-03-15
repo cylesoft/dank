@@ -151,6 +151,7 @@ $pagination['page'] = 1;
 		<div class="user-stuff text-box">
 			<ul>
 			<li><a href="/account/">change your account crap</a></li>
+			<li><a href="/lulz/">admin side</a></li>
 			</ul>
 		</div>
 		<?php
