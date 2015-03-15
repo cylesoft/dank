@@ -308,8 +308,28 @@ div.post {
 	background-color: #fff;
 }
 
+div.post h1, div.post h2, div.post h3, div.post h4 {
+	margin-bottom: 0.5rem;
+}
+
+div.post h1 {
+	font-size: 1.6rem;
+}
+
+div.post h2 {
+	font-size: 1.4rem;
+}
+
+div.post h3 {
+	font-size: 1.2rem;
+}
+
+div.post h4 {
+	font-size: 1rem;
+}
+
 div.post.members-only {
-	background-color: rgb(253, 218, 255);
+	background-color: rgb(254, 242, 255);
 }
 
 div.post.peer-approval {
