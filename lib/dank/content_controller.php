@@ -65,11 +65,59 @@ function parse_text($text) {
 	return array('text' => $t, 'links' => $link_matches[0], 'mentions' => $mention_matches[1], 'hashtags' => $hashtag_matches[1]);
 }
 
+// show relative timestamp
+// based on http://stackoverflow.com/questions/2690504/php-producing-relative-date-time-from-timestamps
+function relative_timestamp($ts) {
+    $diff = time() - $ts;
+    if ($diff < 60){
+        return sprintf($diff > 1 ? '%s seconds ago' : 'a second ago', $diff);
+    }
+    $diff = floor($diff/60);
+    if ($diff < 60){
+        return sprintf($diff > 1 ? '%s minutes ago' : 'one minute ago', $diff);
+    }
+    $diff = floor($diff/60);
+    if ($diff < 24){
+        return sprintf($diff > 1 ? '%s hours ago' : 'an hour ago', $diff);
+    }
+    $diff = floor($diff/24);
+    if ($diff < 7){
+        return sprintf($diff > 1 ? '%s days ago' : 'yesterday', $diff);
+    }
+    if ($diff < 30) {
+        $diff = floor($diff / 7);
+        return sprintf($diff > 1 ? '%s weeks ago' : 'one week ago', $diff);
+    }
+    $diff = floor($diff/30);
+    if ($diff < 12){
+        return sprintf($diff > 1 ? '%s months ago' : 'last month', $diff);
+    }
+    $diff = date('Y') - date('Y', $date);
+    return sprintf($diff > 1 ? '%s years ago' : 'last year', $diff);
+}
+
 /*
 	
 	content system	
 	
 */
+
+// get just the user ID owner based on post ID
+function get_userid_for_postid($post_id) {
+	global $mysqli;
+	$post_id = (int) $post_id * 1;
+	$get_user_id = $mysqli->query("SELECT user_id FROM posts WHERE post_id=$post_id");
+	if ($get_user_id->num_rows == 0) {
+		return 0;
+	} else {
+		$post_row = $get_user_id->fetch_assoc();
+		if (!isset($post_row['user_id'])) {
+			return 0; // anonymous user
+		} else {
+			return $post_row['user_id'];
+		}
+	}
+}
 
 // deal with saving new content to the database
 function post_new_content($content) {
@@ -529,6 +577,12 @@ function delete_content($content_id) {
 	if (!$delete_votes) {
 		return array('ok' => false, 'error' => 'database error deleting post approval votes: '.$mysqli->error);
 	}
+	
+	// delete associated action log items
+	$delete_action_log = $mysqli->query("DELETE FROM action_log WHERE post_id_affected=$content_id");
+	if (!$delete_action_log) {
+		return array('ok' => false, 'error' => 'database error deleting the post action log: '.$mysqli->error);
+	}
 
 	return array('ok' => true);
 	
@@ -617,6 +671,7 @@ function approve_post($post_id, $current_user) {
 				if (!$approve_the_post) {
 					return array('ok' => false, 'error' => 'error with post approval update query: ' . $mysqli->error);
 				} else {
+					$action_log_result = add_action_log($current_user['user_id'], 'content-approved', '', $post_info['user_id'], $post_id);
 					return array('ok' => true, 'approved' => true);
 				}
 			} else {
@@ -670,6 +725,7 @@ function disapprove_post($post_id, $current_user) {
 				// disapproved, delete it
 				$delete_content_result = delete_content($post_id);
 				if ($delete_content_result['ok'] == true) {
+					$action_log_result = add_action_log($current_user['user_id'], 'content-rejected', '', $post_info['user_id'], $post_id);
 					return array('ok' => true, 'deleted' => true);
 				} else {
 					return array('ok' => false, 'error' => 'error deleting the content after disapproval: '.$delete_content_result['error']);
@@ -858,6 +914,7 @@ function post_new_comment($comment) {
 		$return_result = array('ok' => false, 'error' => 'mysql error on new comment: '.$mysqli->error);
 	} else {
 		$new_comment_id = $mysqli->insert_id;
+		$action_log_result = add_action_log($user_id_db, 'new-comment', '', get_userid_for_postid($post_id_db), $post_id_db);
 		$return_result = array( 'ok' => true, 'id' => $new_comment_id );
 	}
 	
@@ -937,4 +994,55 @@ function render_comment($comment, $current_user) {
 	$render .= '<p class="comment-byline">'.$comment['username'].' '.date('m/d/Y h:i a', $comment['posted_ts']).'</p>';
 	$render .= '</div>'."\n";
 	return $render;
+}
+
+// add an action log item
+function add_action_log($user_id, $action_type, $message = '', $user_id_affected = 0, $post_id_affected = 0) {
+	global $mysqli;
+	
+	$user_id = (int) $user_id * 1;
+	
+	$action_type = trim($action_type);
+	$action_type_db = "'".$mysqli->escape_string($action_type)."'";
+	
+	if (trim($message) != '') {
+		$message_db = "'".$mysqli->escape_string(trim($message))."'";
+	} else {
+		$message_db = 'null';
+	}
+	
+	if ($user_id_affected * 1 > 0) {
+		$user_id_affected = (int) $user_id_affected * 1;
+	} else {
+		$user_id_affected = 'null';
+	}
+	
+	if ($post_id_affected * 1 > 0) {
+		$post_id_affected = (int) $post_id_affected * 1;
+	} else {
+		$post_id_affected = 'null';
+	}
+	
+	$add_log = $mysqli->query("INSERT INTO action_log (user_id, user_id_affected, post_id_affected, action_type, log_message, tsc) VALUES ($user_id, $user_id_affected, $post_id_affected, $action_type_db, $message_db, UNIX_TIMESTAMP())");
+	if (!$add_log) {
+		return array('ok' => false, 'error' => 'error inserting log: '.$mysqli->error);
+	} else {
+		return array('ok' => true);
+	}
+	
+}
+
+// get latest action logs relevant to the current user
+function get_action_log($affected_user_id) {
+	global $mysqli;
+	$affected_user_id = (int) $affected_user_id * 1;
+	// right now get 7 latest
+	$get_logs = $mysqli->query("SELECT * FROM action_log WHERE user_id_affected=$affected_user_id ORDER BY tsc DESC LIMIT 7");
+	$logs = array();
+	if ($get_logs->num_rows > 0) {
+		while ($log = $get_logs->fetch_assoc()) {
+			$logs[] = $log;
+		}
+	}
+	return $logs;
 }

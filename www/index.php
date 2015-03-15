@@ -108,11 +108,27 @@ $pagination['page'] = 1;
 		<?php
 		if ($current_user['loggedin']) {
 			
+			// show approval queue
 			$how_many_need_approval = get_num_unapproved_posts();
 			if ($how_many_need_approval > 0) {
 				?><div class="approval-queue text-box">
 					<p><a href="./?approval-queue"><?php echo $how_many_need_approval; ?> posts</a> need approval!</p>
 				</div><?php
+			}
+			
+			// show recent actions
+			$action_log = get_action_log($current_user['user_id']);
+			foreach ($action_log as $log) {
+				if ($log['tsc'] < strtotime('7 days ago')) {
+					continue;
+				}
+				if ($log['action_type'] == 'content-rejected') {
+					?><div class="text-box log-entry content-rejected">Your content was rejected and deleted. Try harder. (<?php echo relative_timestamp($log['tsc']); ?>)</div><?php
+				} else if ($log['action_type'] == 'content-approved') {
+					?><div class="text-box log-entry content-approved"><a href="/content/<?php echo $log['post_id_affected']; ?>/">Your content was approved</a>, great job, cool story. (<?php echo relative_timestamp($log['tsc']); ?>)</div><?php
+				} else if ($log['action_type'] == 'new-comment') {
+					?><div class="text-box log-entry new-comment">Someone posted a new comment on your content. <a href="/content/<?php echo $log['post_id_affected']; ?>/">Check it out.</a> (<?php echo relative_timestamp($log['tsc']); ?>)</div><?php
+				}
 			}
 			
 		?>

@@ -378,9 +378,13 @@ div.post p.post-content {
 }
 
 div.approval-queue {
-	border: 1px dotted red;
+	border: 1px dotted blue;
 	border-radius: 4px;
-	background-color: rgba(255, 0, 0, 0.2);
+	background-color: rgba(179, 179, 255, 1);
+	color: black;
+}
+
+div.approval-queue a {
 	color: black;
 }
 
@@ -473,6 +477,23 @@ div.comment-utils {
 
 div.clear {
 	clear: both;
+}
+
+.log-entry {
+	border: 1px dotted #999;
+	border-radius: 4px;
+	background-color: #fff;
+	color: black;
+}
+
+.log-entry.content-rejected {
+	border: 1px dotted red;
+	background-color: #ffb1b1;
+}
+
+.log-entry.content-approved {
+	border: 1px dotted green;
+	background-color: #9dffba;
 }
 
 /*
