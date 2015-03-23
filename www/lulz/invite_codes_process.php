@@ -3,13 +3,13 @@
 // deal with invite code operations
 
 $login_required = true;
-require_once('../../lib/dank/login_check.php');
+require_once(__DIR__.'/../../lib/dank/login_check.php');
 
 if (!isset($_POST['a']) || trim($_POST['a']) == '') {
 	die('no action given, dunno what to do');
 }
 
-require_once('../../lib/dank/dbconn_mysql.php');
+require_once(__DIR__.'/../../lib/dank/dbconn_mysql.php');
 
 $action = trim($_POST['a']);
 

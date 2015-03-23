@@ -2,9 +2,9 @@
 
 // dank.
 
-require_once('../lib/dank/login_check.php');
+require_once(__DIR__.'/../lib/dank/login_check.php');
 
-require_once('../lib/dank/content_controller.php');
+require_once(__DIR__.'/../lib/dank/content_controller.php');
 
 $single_post_mode = false;
 
@@ -49,11 +49,9 @@ $pagination['page'] = 1;
 
 ?><!doctype html>
 <html>
-<?php //echo '<!-- '.print_r($_GET, true).' -->'; ?>
-<?php //echo '<!-- '.print_r($post_filter, true).' -->'; ?>
 <!--
-      _             _                                  
-     | |           | |                                 
+      _             _
+     | |           | |
    __| | __ _ _ __ | | __
   / _` |/ _` | '_ \| |/ /
  | (_| | (_| | | | |   <
@@ -61,12 +59,12 @@ $pagination['page'] = 1;
 
 -->
 <head>
-<?php require_once('../lib/dank/templates/head.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/head.php'); ?>
 </head>
 <body>
 <div class="grid-container">
 
-<?php require_once('../lib/dank/templates/header.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/header.php'); ?>
 
 <div class="section group">
 	<div class="col s8 main-content">
@@ -175,6 +173,6 @@ $pagination['page'] = 1;
 
 </div>
 
-<?php require_once('../lib/dank/templates/foot.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/foot.php'); ?>
 </body>
 </html>

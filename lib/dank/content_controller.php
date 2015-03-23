@@ -2,23 +2,22 @@
 
 /*
 	
-	controller for
+	dank controller for
 	 - parsing text content
 	 - posting new content in the database
 	 - fetching lots of content
 	 - editing existing content
 	 - deleting existing content
+	 - ... and more!
 	
 	functions should return an array:
 		{ "ok": true/false, "error": "if there is one" }
 	 
 */
 
-$file_path_base = '/var/www/domains/dankest.website/www/files/'; // where to store files
-$file_url_base = '/files/';
-
-require_once('dbconn_mysql.php');
-require_once('/var/www/domains/dankest.website/lib/Michelf/Markdown.inc.php');
+require_once(__DIR__.'/../../config/config.php');
+require_once(__DIR__.'/dbconn_mysql.php');
+require_once(__DIR__.'/../Michelf/Markdown.inc.php');
 use \Michelf\Markdown;
 
 // parse text to link-ify links, #hashtags, and @mentions
@@ -98,7 +97,7 @@ function relative_timestamp($ts) {
 
 /*
 	
-	content system	
+	content system
 	
 */
 
@@ -791,7 +790,7 @@ function render_post($post, $current_user, $single_post_mode = false) {
 	if ($current_user['show_nsfw'] == false && in_array('nsfw', $post_classes)) {
 		$nsfw_hidden_state = true;
 		$render .= '<p><input class="nsfw-show-anyway-btn" type="button" value="Show this NSFW content anyway..." data-post-id="'.$post['post_id'].'" /></p>';
-	} else { 
+	} else {
 		$nsfw_hidden_state = false;
 	}
 	// post content itself, whether image or audio or video
@@ -846,7 +845,7 @@ function render_post($post, $current_user, $single_post_mode = false) {
 
 /*
 	
-	comment system	
+	comment system
 	
 */
 

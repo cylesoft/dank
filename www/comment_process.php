@@ -1,7 +1,7 @@
 <?php
 
 $login_required = true;
-require_once('../lib/dank/login_check.php');
+require_once(__DIR__.'/../lib/dank/login_check.php');
 
 if (!isset($_REQUEST['a']) || trim($_REQUEST['a']) == '') {
 	die('no action given, dunno what to do');
@@ -11,7 +11,7 @@ $action = strtolower(trim($_REQUEST['a']));
 
 //echo '<pre>'.print_r($_POST, true).'</pre>';
 
-require_once('../lib/dank/content_controller.php');
+require_once(__DIR__.'/../lib/dank/content_controller.php');
 
 if ($action == 'n') {
 	// new comment

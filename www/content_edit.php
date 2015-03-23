@@ -3,9 +3,9 @@
 //echo '<pre>$_GET: '.print_r($_GET, true).'</pre>';
 
 $login_required = true;
-require_once('../lib/dank/login_check.php');
+require_once(__DIR__.'/../lib/dank/login_check.php');
 
-require_once('../lib/dank/content_controller.php');
+require_once(__DIR__.'/../lib/dank/content_controller.php');
 
 $content_id = (int) $_GET['cid'] * 1;
 
@@ -21,16 +21,16 @@ if ($content['user_id'] > 0 && $content['user_id'] != $current_user['user_id']) 
 	die('not your content, cannot edit it, sorry');
 }
 
-echo '<!-- '.print_r($content, true).' -->';
+//echo '<!-- '.print_r($content, true).' -->';
 
 ?><!doctype html>
 <html>
 <head>
-<?php require_once('../lib/dank/templates/head.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/head.php'); ?>
 </head>
 <body>
 <div class="grid-container">
-<?php require_once('../lib/dank/templates/header.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/header.php'); ?>
 
 <div class="section group">
 	<div class="col s12">
@@ -53,6 +53,6 @@ echo '<!-- '.print_r($content, true).' -->';
 </div>
 
 </div>
-<?php require_once('../lib/dank/templates/foot.php'); ?>
+<?php require_once(__DIR__.'/../lib/dank/templates/foot.php'); ?>
 </body>
 </html>

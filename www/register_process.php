@@ -38,7 +38,7 @@ if (trim($_POST['p1']) != trim($_POST['p2'])) {
 	die('your passwords do not match, goddamn.');
 }
 
-require_once('../lib/dank/dbconn_mysql.php');
+require_once(__DIR__.'/../lib/dank/dbconn_mysql.php');
 
 $new_user_email_db = "'".$mysqli->escape_string(trim($_POST['e']))."'";
 $new_username_db = "'".$mysqli->escape_string(trim($_POST['u']))."'";

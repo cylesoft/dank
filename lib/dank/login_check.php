@@ -7,7 +7,8 @@
 
 */
 
-require_once('dbconn_mysql.php');
+require_once(__DIR__.'/../../config/config.php');
+require_once(__DIR__.'/dbconn_mysql.php');
 
 // set defaults for your user cookie
 $current_user = array(
@@ -16,10 +17,6 @@ $current_user = array(
 	'userlevel' => 6,
 	'show_nsfw' => false,
 );
-
-$return_to = '/'; // where are they going after successful login?
-$session_cookie_name = 'dank-session';
-$session_cookie_domain = 'dankest.website';
 
 function get_userlevel($user_id) {
 	global $mysqli;
@@ -94,7 +91,7 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 			$update_session_expiry = $mysqli->query("UPDATE user_sessions SET expires=$new_session_key_expires WHERE session_key=$user_session_key_db AND user_id=$current_user_id");
 			update_last_activity($current_user_id);
 			if ($_SERVER['PHP_SELF'] == 'login.php') {
-				header('Location: '.$return_to);
+				header('Location: '.$post_login_return_to);
 				die();
 			}
 		} else {
@@ -169,10 +166,10 @@ if (isset($_COOKIE[$session_cookie_name]) && trim($_COOKIE[$session_cookie_name]
 		// write session to database with hashed secret
 		$new_session_key_db = "'".$mysqli->escape_string($new_session_key)."'";
 		$new_session_secret_hash_db = "'".$mysqli->escape_string($new_session_secret_hash)."'";
-		$new_session_row = $mysqli->query("INSERT INTO user_sessions (session_key, session_secret, user_id, expires, ts) VALUES ($new_session_key_db, $new_session_secret_hash_db, $current_user_id, $new_session_key_expires, UNIX_TIMESTAMP())");		
+		$new_session_row = $mysqli->query("INSERT INTO user_sessions (session_key, session_secret, user_id, expires, ts) VALUES ($new_session_key_db, $new_session_secret_hash_db, $current_user_id, $new_session_key_expires, UNIX_TIMESTAMP())");
 		
 		// logged in, cool
-		header('Location: '.$return_to);
+		header('Location: '.$post_login_return_to);
 		die();
 	} else {
 		if (!$has_flood_control_limit) {

@@ -3,9 +3,9 @@
 // go through the database and reparse all text
 
 $login_required = true;
-require_once('../../lib/dank/login_check.php');
+require_once(__DIR__.'/../../lib/dank/login_check.php');
 
-require_once('../../lib/dank/content_controller.php');
+require_once(__DIR__.'/../../lib/dank/content_controller.php');
 
 $post_counter = 0;
 $comment_counter = 0;

@@ -2,9 +2,9 @@
 
 // fetch content for infinite scrolling
 
-require_once('../lib/dank/login_check.php');
+require_once(__DIR__.'/../lib/dank/login_check.php');
 
-require_once('../lib/dank/content_controller.php');
+require_once(__DIR__.'/../lib/dank/content_controller.php');
 
 $post_filter = array();
 

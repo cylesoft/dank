@@ -1,7 +1,7 @@
 <?php
 
 $login_required = true;
-require_once('../lib/dank/login_check.php');
+require_once(__DIR__.'/../lib/dank/login_check.php');
 
 if (!isset($_REQUEST['a']) || trim($_REQUEST['a']) == '') {
 	die('no action given, dunno what to do');
