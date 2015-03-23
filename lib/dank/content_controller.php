@@ -22,6 +22,7 @@ use \Michelf\Markdown;
 
 // parse text to link-ify links, #hashtags, and @mentions
 function parse_text($text) {
+	global $site_url;
 	$link_regex = '/\b(https?:\/\/)?(\S+)\.(\S+)\b/i';
 	$hashtag_regex = '/\#([^\s\#]+)/i';
 	$mention_regex = '/\@(\S+)/i';
@@ -55,8 +56,8 @@ function parse_text($text) {
 			return '<a href="'.$the_link.'">'.$matches[0].'</a>';
 		}
 	}, $t);
-	$t = preg_replace($hashtag_regex, '<a href="https://dankest.website/tagged/$1/">$0</a>', $t);
-	$t = preg_replace($mention_regex, '<a href="https://dankest.website/by/$1/">$0</a>', $t);
+	$t = preg_replace($hashtag_regex, '<a href="'.$site_url.'tagged/$1/">$0</a>', $t);
+	$t = preg_replace($mention_regex, '<a href="'.$site_url.'by/$1/">$0</a>', $t);
 	if (preg_match('/"expanded-content"/i', $t)) {
 		$t .= '<div class="clear"></div>';
 	}
