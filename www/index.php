@@ -62,7 +62,7 @@ $pagination['page'] = 1;
 <?php require_once(__DIR__.'/../lib/dank/templates/head.php'); ?>
 </head>
 <body>
-<div class="grid-container">
+<div class="grid-container" id="<?php echo (($single_post_mode) ? 'single-content-page' : 'content-list-page' ); ?>">
 
 <?php require_once(__DIR__.'/../lib/dank/templates/header.php'); ?>
 

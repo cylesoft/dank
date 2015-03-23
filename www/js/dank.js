@@ -34,7 +34,9 @@ function init_dank() {
 	
 	max_scroll_limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );
 	
-	window.addEventListener('scroll', scroll_handler);
+	if (document.getElementById('content-list-page') != undefined) {
+		window.addEventListener('scroll', scroll_handler);
+	}
 	
 	init_post_stuff();
 	init_comment_stuff();
